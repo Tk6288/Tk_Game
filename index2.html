@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云链乡土 - 农产直播培训</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; padding-bottom: 80px; }
+        .hide { display: none; }
+        .nav-active { color: #16a34a; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .check-anim { animation: check-pop 0.3s ease-out forwards; }
+        @keyframes check-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header (Based on User Request) -->
+    <header class="bg-green-600 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2" onclick="app.navigate('home')">
+                <i class="fa-solid fa-leaf text-xl"></i>
+                <h1 class="text-lg font-bold">云链乡土</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-sm bg-green-700 px-3 py-1 rounded-full flex items-center">
+                    <i class="fa-solid fa-coins mr-1"></i> <span id="header-points">100</span>
+                </div>
+                <div class="relative cursor-pointer" onclick="alert('购物车')">
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-container" class="max-w-md mx-auto p-4 min-h-screen">
+        <!-- Dynamic Content Injected Here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50">
+        <div class="flex justify-around items-center h-16 max-w-md mx-auto">
+            <button onclick="app.navigate('home')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-home">
+                <i class="fa-solid fa-house text-xl mb-1"></i>
+                <span class="text-[10px]">首页</span>
+            </button>
+            <button onclick="app.navigate('hot-courses')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-hot-courses">
+                <i class="fa-solid fa-fire text-xl mb-1"></i>
+                <span class="text-[10px]">热销课程</span>
+            </button>
+            <button onclick="app.navigate('community')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-community">
+                <i class="fa-solid fa-users-line text-xl mb-1"></i>
+                <span class="text-[10px]">社区</span>
+            </button>
+            <button onclick="app.navigate('courses-points')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-courses-points">
+                <i class="fa-solid fa-graduation-cap text-xl mb-1"></i>
+                <span class="text-[10px]">课程/积分</span>
+            </button>
+            <button onclick="app.navigate('mine')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-mine">
+                <i class="fa-regular fa-user text-xl mb-1"></i>
+                <span class="text-[10px]">我的</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Data Store
+        const db = {
+            flashSale: [
+                { id: 101, title: "直播话术速成：3小时卖爆农货", price: 0.01, originalPrice: 199, sold: 999, img: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 102, title: "短视频拍摄剪辑：田间地头也是大片", price: 8.88, originalPrice: 299, sold: 1542, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 103, title: "私域流量运营：复购率提升100%", price: 9.90, originalPrice: 399, sold: 888, img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            streamers: [
+                { id: 201, name: "农哥大壮", title: "全网粉丝500w+", desc: "单场带货破百万，擅长幽默风直播", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 202, name: "果园小妹", title: "水果带货一姐", desc: "亲和力满分，教你如何展示水果细节", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 203, name: "山货老张", title: "实诚带货人", desc: "20年农产品经验，教你选品定品", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            mallItems: [
+                { id: 301, title: "专业直播补光灯", points: 500, img: "https://images.unsplash.com/photo-1527011046414-4781f1f94f8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 302, title: "无线领夹麦克风", points: 800, img: "https://images.unsplash.com/photo-1590845947698-8924d7409b56?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            successStories: [
+                { name: "江门激源橘业", prev: 35, current: 86, desc: "通过直播带货，橘子滞销变脱销" },
+                { name: "赣南脐橙合作社", prev: 20, current: 92, desc: "全员培训，线上销量翻三番" },
+                { name: "大别山茶叶铺", prev: 45, current: 78, desc: "品牌化运营，客单价提升50%" }
+            ],
+            history: [
+                { title: "2024农产品电商趋势分析", date: "2023-10-05" },
+                { title: "如何利用AI写文案", date: "2023-09-28" }
+            ],
+            community: {
+                qa: [
+                    { title: "直播间没人气怎么办？", replies: 128 },
+                    { title: "水果快递包装怎么省成本？", replies: 56 }
+                ],
+                live: [
+                    { title: "正在直播：果园实地考察教学", viewer: "1.2w" },
+                    { title: "晚间研讨：明年种什么最赚钱", viewer: "3k" }
+                ]
+            }
+        };
+
+        // App Logic
+        const app = {
+            state: {
+                view: 'home',
+                points: 100,
+                cart: [],
+                purchased: [], // IDs of purchased courses
+                subTabs: {
+                    'courses-points': 'purchased',
+                    'community': 'qa'
+                }
+            },
+
+            init() {
+                this.navigate('home');
+                this.startTimer();
+            },
+
+            navigate(view, data = null) {
+                this.state.view = view;
+                
+                // Update Nav
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('nav-active', 'text-green-600');
+                    el.classList.add('text-gray-400');
+                });
+                const activeNav = document.getElementById(`nav-${view}`);
+                if(activeNav) {
+                    activeNav.classList.add('nav-active', 'text-green-600');
+                    activeNav.classList.remove('text-gray-400');
+                }
+
+                // Render
+                const container = document.getElementById('app-container');
+                window.scrollTo(0,0);
+
+                switch(view) {
+                    case 'home': container.innerHTML = this.renderHome(); break;
+                    case 'hot-courses': container.innerHTML = this.renderHotCourses(); break;
+                    case 'courses-points': container.innerHTML = this.renderCoursesPoints(); break;
+                    case 'community': container.innerHTML = this.renderCommunity(); break;
+                    case 'mine': container.innerHTML = this.renderMine(); break;
+                    case 'course-detail': container.innerHTML = this.renderCourseDetail(data); break;
+                    case 'streamer-detail': container.innerHTML = this.renderStreamerDetail(data); break;
+                    case 'product-detail': container.innerHTML = this.renderProductDetail(data); break;
+                }
+                
+                this.updateHeader();
+            },
+
+            updateHeader() {
+                document.getElementById('header-points').innerText = this.state.points;
+                const badge = document.getElementById('cart-badge');
+                if(this.state.cart.length > 0) {
+                    badge.innerText = this.state.cart.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            },
+
+            setSubTab(parent, tab) {
+                this.state.subTabs[parent] = tab;
+                this.navigate(parent);
+            },
+
+            // --- Render Functions ---
+
+            renderHome() {
+                return `
+                    <!-- Banner -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow mb-4 relative">
+                        <div class="h-40 bg-gray-800 relative">
+                            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-70">
+                            <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center animate-pulse">
+                                <i class="fa-solid fa-circle text-[8px] mr-1"></i> 直播中
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-3 text-white bg-gradient-to-t from-black/80 to-transparent">
+                                <h2 class="text-lg font-bold">助农直播间</h2>
+                                <p class="text-xs opacity-90">优质农产品 源头直发</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flash Sale Section -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2">秒杀精品课程</h3>
+                            <div class="text-xs text-gray-500">距结束 <span class="bg-red-500 text-white px-1 rounded timer">02:15:30</span></div>
+                        </div>
+                        <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+                            ${db.flashSale.map(c => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="min-w-[140px] bg-white rounded-lg shadow overflow-hidden">
+                                    <img src="${c.img}" class="w-full h-28 object-cover">
+                                    <div class="p-2">
+                                        <div class="font-medium text-sm truncate">${c.title}</div>
+                                        <div class="text-xs text-gray-400 mt-1">已抢 <span class="text-orange-500">✖️${c.sold}</span></div>
+                                        <div class="flex items-end justify-between mt-1">
+                                            <span class="text-red-600 font-bold">¥${c.price}</span>
+                                            <span class="text-xs text-gray-300 line-through">¥${c.originalPrice}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Popular Streamers -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2 mb-3">人气主播</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            ${db.streamers.map(s => `
+                                <div onclick="app.navigate('streamer-detail', ${s.id})" class="bg-white rounded-lg shadow p-2 flex flex-col items-center text-center cursor-pointer relative group">
+                                    <img src="${s.img}" class="w-16 h-16 rounded-full border-2 border-green-100 mb-2 object-cover group-hover:scale-105 transition">
+                                    <div class="text-xs font-bold truncate w-full">${s.name}</div>
+                                    <div class="text-[10px] text-orange-500 mt-1">🔥 人气火爆</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderHotCourses() {
+                return `
+                    <!-- Hot Recommends -->
+                    <div class="bg-green-50 p-4 rounded-xl mb-6 flex items-center justify-between shadow-inner">
+                        <div>
+                            <h2 class="text-xl font-bold text-green-800">热销课程榜</h2>
+                            <p class="text-xs text-green-600 mt-1">大家都在学，销量破万</p>
+                        </div>
+                        <i class="fa-solid fa-trophy text-4xl text-yellow-500"></i>
+                    </div>
+
+                    <!-- Flash Sale Grid -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-stopwatch text-red-500"></i> 限时秒杀</h3>
+                            <span class="text-xs bg-red-100 text-red-500 px-2 py-1 rounded-full timer">02:15:30</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${db.flashSale.map(c => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="bg-white rounded-lg shadow p-3 flex gap-3">
+                                    <img src="${c.img}" class="w-24 h-24 rounded object-cover">
+                                    <div class="flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <h4 class="font-bold text-sm line-clamp-2">${c.title}</h4>
+                                            <div class="text-xs text-gray-500 mt-1">已售 <span class="text-orange-500">✖️${c.sold}</span></div>
+                                        </div>
+                                        <div class="flex justify-between items-end">
+                                            <div>
+                                                <span class="text-red-600 font-bold text-lg">¥${c.price}</span>
+                                                <span class="text-xs text-gray-400 line-through ml-1">¥${c.originalPrice}</span>
+                                            </div>
+                                            ${this.state.purchased.includes(c.id) ? 
+                                                '<span class="text-green-600 text-xs font-bold"><i class="fa-solid fa-check"></i> 已购</span>' : 
+                                                '<button class="bg-green-600 text-white text-xs px-3 py-1.5 rounded-full">抢购</button>'}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Points Mall Preview -->
+                    <div class="mb-20">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-gray-800">积分商城</h3>
+                            <button onclick="app.navigate('courses-points')" class="text-xs text-gray-500">查看更多 <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            ${db.mallItems.map(item => `
+                                <div onclick="app.navigate('product-detail', ${item.id})" class="bg-white rounded-lg shadow p-2">
+                                    <img src="${item.img}" class="w-full h-24 object-cover rounded mb-2">
+                                    <div class="font-medium text-xs truncate">${item.title}</div>
+                                    <div class="text-orange-500 text-xs font-bold mt-1"><i class="fa-solid fa-coins"></i> ${item.points} 积分</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderCoursesPoints() {
+                const tab = this.state.subTabs['courses-points'];
+                return `
+                    <!-- Points Header -->
+                    <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-xl p-5 text-white mb-4 shadow-lg">
+                        <div class="text-sm opacity-80">我的积分</div>
+                        <div class="text-3xl font-bold mt-1">${this.state.points}</div>
+                        <div class="mt-3 flex gap-2">
+                            <button class="bg-white/20 text-xs px-3 py-1 rounded-full">积分记录</button>
+                            <button class="bg-white text-green-600 font-bold text-xs px-3 py-1 rounded-full">去兑换</button>
+                        </div>
+                    </div>
+
+                    <!-- Sub Tabs -->
+                    <div class="flex border-b border-gray-200 mb-4 bg-white rounded-t-lg">
+                        <div onclick="app.setSubTab('courses-points', 'purchased')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'purchased' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">已购课程</div>
+                        <div onclick="app.setSubTab('courses-points', 'managed')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'managed' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">账号托管</div>
+                        <div onclick="app.setSubTab('courses-points', 'mall')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'mall' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">积分商城</div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-20">
+                        ${this.renderCoursesPointsContent(tab)}
+                    </div>
+                `;
+            },
+
+            renderCoursesPointsContent(tab) {
+                if (tab === 'purchased') {
+                    const purchasedItems = db.flashSale.filter(c => this.state.purchased.includes(c.id));
+                    
+                    let html = '';
+                    if(purchasedItems.length === 0) {
+                        html = `<div class="text-center text-gray-400 py-8 bg-white rounded-lg shadow-sm">暂无已购课程<br><span class="text-xs">快去热销课程选购吧</span></div>`;
+                    } else {
+                        html = purchasedItems.map(c => `
+                            <div class="bg-white p-3 rounded-lg shadow mb-3 flex gap-3">
+                                <img src="${c.img}" class="w-20 h-20 rounded object-cover">
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <h4 class="font-bold text-sm">${c.title}</h4>
+                                    <button class="bg-green-600 text-white text-xs py-1.5 rounded text-center mt-2">立即观看</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+
+                    // History
+                    html += `
+                        <div class="mt-6">
+                            <h3 class="font-bold text-gray-700 mb-3 pl-2 border-l-4 border-gray-400">历史观看</h3>
+                            <div class="space-y-2">
+                                ${db.history.map(h => `
+                                    <div class="bg-white p-3 rounded shadow-sm flex justify-between items-center">
+                                        <div class="text-sm text-gray-800">${h.title}</div>
+                                        <div class="text-xs text-gray-400">${h.date}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    return html;
+                } else if (tab === 'managed') {
+                    return `
+                        <div class="bg-white p-6 rounded-xl shadow text-center">
+                            <i class="fa-solid fa-user-tie text-5xl text-blue-500 mb-4"></i>
+                            <h2 class="text-lg font-bold mb-2">专业账号托管</h2>
+                            <p class="text-xs text-gray-500 mb-6">不懂运营？没时间直播？官方团队为您提供一站式代运营服务。</p>
+                            <button class="bg-green-600 text-white w-full py-2 rounded-lg font-medium" onclick="alert('申请已提交')">申请托管</button>
+                        </div>
+                    `;
+                } else if (tab === 'mall') {
+                    return `
+                        <div class="grid grid-cols-2 gap-3">
+                            ${db.mallItems.map(item => `
+                                <div onclick="app.navigate('product-detail', ${item.id})" class="bg-white rounded-lg shadow p-3 cursor-pointer">
+                                    <img src="${item.img}" class="w-full h-28 object-cover rounded mb-2">
+                                    <div class="font-medium text-sm truncate">${item.title}</div>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <div class="text-orange-500 font-bold text-xs"><i class="fa-solid fa-coins"></i> ${item.points}</div>
+                                        <button class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">兑换</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+            },
+
+            renderCommunity() {
+                const tab = this.state.subTabs['community'];
+                return `
+                    <div class="bg-white p-2 rounded-xl shadow-sm mb-4 flex">
+                        <button onclick="app.setSubTab('community', 'qa')" class="flex-1 py-2 text-sm font-bold ${tab === 'qa' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">问答</button>
+                        <button onclick="app.setSubTab('community', 'live')" class="flex-1 py-2 text-sm font-bold ${tab === 'live' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">直播</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${tab === 'qa' ? db.community.qa.map(q => `
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <div class="flex items-start gap-2">
+                                    <span class="bg-green-100 text-green-700 text-xs px-1.5 py-0.5 rounded font-bold mt-0.5">问</span>
+                                    <h4 class="font-bold text-sm text-gray-800">${q.title}</h4>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500 text-right">${q.replies} 个回答</div>
+                            </div>
+                        `).join('') : db.community.live.map(l => `
+                            <div class="bg-white p-3 rounded-lg shadow flex items-center gap-3">
+                                <div class="relative w-20 h-14 rounded overflow-hidden bg-gray-800">
+                                     <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-white opacity-80"></i></div>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-sm">${l.title}</h4>
+                                    <div class="text-xs text-red-500 mt-1 flex items-center gap-1"><span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> ${l.viewer} 在看</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            renderStreamerDetail(id) {
+                const s = db.streamers.find(x => x.id == id) || db.streamers[0];
+                const sortedStories = [...db.successStories].sort((a, b) => (b.current - b.prev) - (a.current - a.prev));
+
+                return `
+                    <div class="bg-black text-white relative">
+                        <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
+                            <i onclick="app.navigate('hot-courses')" class="fa-solid fa-arrow-left text-xl cursor-pointer shadow-sm"></i>
+                            <img src="${s.img}" class="w-8 h-8 rounded-full border border-white">
+                            <span class="font-bold text-sm">${s.name}</span>
+                        </div>
+                        <div class="h-64 flex items-center justify-center bg-gray-900 relative overflow-hidden">
+                            <img src="${s.img}" class="absolute inset-0 w-full h-full object-cover opacity-50">
+                            <div class="z-10 text-center">
+                                <div class="text-4xl mb-2"><i class="fa-solid fa-play-circle opacity-80"></i></div>
+                                <div class="text-sm font-bold">直播中...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white -mt-4 relative rounded-t-xl z-10">
+                        <h2 class="font-bold text-lg mb-1">${s.title}</h2>
+                        <p class="text-gray-500 text-xs mb-4">${s.desc}</p>
+
+                        <h3 class="font-bold text-sm mb-3 border-l-4 border-green-600 pl-2">推荐直播课程</h3>
+                        <div class="flex gap-3 overflow-x-auto pb-2 mb-6">
+                            ${db.flashSale.slice(0, 2).map(c => `
+                                <div class="min-w-[120px] bg-gray-50 rounded p-2 border border-gray-100">
+                                    <img src="${c.img}" class="w-full h-16 object-cover rounded mb-2">
+                                    <div class="text-xs font-bold truncate">${c.title}</div>
+                                    <div class="text-red-600 font-bold text-xs mt-1">¥${c.price}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <h3 class="font-bold text-sm mb-3 border-l-4 border-green-600 pl-2">合作运营成功案例</h3>
+                        <div class="space-y-3 mb-20">
+                            ${sortedStories.map((st, idx) => `
+                                <div class="bg-white border border-gray-100 rounded shadow-sm p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="font-bold text-sm flex items-center gap-2">
+                                            <span class="bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded text-xs">${idx + 1}</span>
+                                            ${st.name}
+                                        </div>
+                                        <div class="text-green-600 font-bold text-xs"><i class="fa-solid fa-arrow-trend-up"></i> 增长 ${(st.current - st.prev)}%</div>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: ${st.current}%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 flex justify-between">
+                                        <span>前: ${st.prev}%</span>
+                                        <span>后: ${st.current}%</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1 bg-gray-50 p-1 rounded">${st.desc}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderCourseDetail(id) {
+                const c = db.flashSale.find(x => x.id == id);
+                const isBought = this.state.purchased.includes(id);
+
+                return `
+                    <div class="relative">
+                        <div class="absolute top-4 left-4 z-20 bg-black/30 rounded-full p-1.5 px-3 text-white cursor-pointer" onclick="app.navigate('hot-courses')">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </div>
+                        <img src="${c.img}" class="w-full h-64 object-cover">
+                        
+                        <div class="p-4 bg-white rounded-t-xl -mt-4 relative z-10 min-h-screen">
+                            <div class="flex justify-between items-start">
+                                <h1 class="text-xl font-bold text-gray-800 mb-2 w-3/4">${c.title}</h1>
+                                ${isBought ? '<div class="text-green-600 flex flex-col items-center check-anim"><i class="fa-solid fa-circle-check text-2xl"></i><span class="text-[10px] font-bold">已购买</span></div>' : ''}
+                            </div>
+
+                            <div class="flex items-end gap-2 mb-4">
+                                <span class="text-3xl font-bold text-red-600">¥${c.price}</span>
+                                <span class="text-gray-400 line-through text-sm">¥${c.originalPrice}</span>
+                            </div>
+
+                            <!-- Mock Description -->
+                            <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                                <div class="text-xs text-gray-500 mb-1">购买可得</div>
+                                <div class="text-orange-500 font-bold text-sm"><i class="fa-solid fa-coins"></i> ${Math.floor(c.price * 10)} 积分</div>
+                            </div>
+
+                            <h3 class="font-bold text-lg mb-2">课程详情</h3>
+                            <div class="text-sm text-gray-600 leading-relaxed space-y-3 mb-20">
+                                <p>本课程由一线助农主播亲自授课，内容涵盖直播间搭建、产品选品、话术演练等核心环节。</p>
+                                <div class="rounded-lg overflow-hidden my-2">
+                                    <img src="https://images.unsplash.com/photo-1595975604023-01c813699703?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" class="w-full h-40 object-cover">
+                                    <div class="bg-gray-100 p-2 text-xs text-center text-gray-500">实地教学场景</div>
+                                </div>
+                                <p>适合人群：返乡创业青年、种植大户、合作社负责人。学完即可上手，开启您的助农直播之路。</p>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Bar -->
+                        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3 flex gap-3 z-50">
+                            <div class="flex items-center gap-4 px-2">
+                                <div class="flex flex-col items-center text-xs text-gray-500">
+                                    <i class="fa-solid fa-store text-lg"></i> 店铺
+                                </div>
+                                <div class="flex flex-col items-center text-xs text-gray-500 relative" onclick="alert('Cart Open')">
+                                    <i class="fa-solid fa-cart-shopping text-lg"></i> 
+                                    <span class="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full ${this.state.cart.length ? '' : 'hidden'}"></span>
+                                    购物车
+                                </div>
+                            </div>
+                            ${isBought ? 
+                                `<button class="flex-1 bg-gray-300 text-gray-600 rounded-full font-bold" disabled>已购买</button>` :
+                                `<button onclick="app.addToCart(${c.id})" class="flex-1 bg-orange-400 text-white rounded-l-full font-bold">加入购物车</button>
+                                 <button onclick="app.buy(${c.id}, ${c.price})" class="flex-1 bg-red-600 text-white rounded-r-full font-bold">立即购买</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderProductDetail(id) {
+                const item = db.mallItems.find(x => x.id == id);
+                return `
+                    <div class="bg-white min-h-screen relative">
+                         <div class="absolute top-4 left-4 z-20 bg-black/30 rounded-full p-1.5 px-3 text-white cursor-pointer" onclick="window.history.back()">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </div>
+                        <img src="${item.img}" class="w-full h-64 object-cover">
+                        <div class="p-5">
+                            <h1 class="text-xl font-bold mb-2">${item.title}</h1>
+                            <div class="text-orange-500 font-bold text-xl mb-4"><i class="fa-solid fa-coins"></i> ${item.points} 积分</div>
+                            <div class="bg-gray-50 p-4 rounded text-sm text-gray-600 mb-6">
+                                <h3 class="font-bold mb-2">商品详情</h3>
+                                <p>这是一款专为直播设计的优质设备，能够显著提升直播间画面质量和声音清晰度。兑换后将于3个工作日内发货。</p>
+                            </div>
+                            <button class="w-full bg-green-600 text-white font-bold py-3 rounded-full shadow" onclick="alert('积分不足或模拟兑换成功')">立即兑换</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderMine() {
+                return `
+                    <div class="bg-white rounded-xl p-6 shadow-sm mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
+                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <div class="font-bold text-lg">王大伯</div>
+                                <div class="text-xs text-gray-500">积分: ${this.state.points}</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                            <span>我的订单</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                             <span>我的课程</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                             <span>联系客服</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // Actions
+            addToCart(id) {
+                if(!this.state.cart.includes(id)) {
+                    this.state.cart.push(id);
+                    this.updateHeader();
+                    // Refresh current view to update badge
+                    this.navigate(this.state.view, id);
+                    alert('已加入购物车');
+                }
+            },
+
+            buy(id, price) {
+                if(confirm(`确认支付 ¥${price} 购买?`)) {
+                    this.state.purchased.push(id);
+                    this.state.points += Math.floor(price * 10);
+                    this.navigate('course-detail', id); // Refresh to show bought state
+                    alert(`购买成功! 获得 ${Math.floor(price * 10)} 积分`);
+                }
+            },
+
+            startTimer() {
+                setInterval(() => {
+                    const now = new Date();
+                    const end = new Date();
+                    end.setHours(23, 59, 59);
+                    const diff = end - now;
+                    if(diff > 0) {
+                        const h = String(Math.floor(diff / 3600000 % 24)).padStart(2, '0');
+                        const m = String(Math.floor(diff / 60000 % 60)).padStart(2, '0');
+                        const s = String(Math.floor(diff / 1000 % 60)).padStart(2, '0');
+                        document.querySelectorAll('.timer').forEach(el => el.innerText = `${h}:${m}:${s}`);
+                    }
+                }, 1000);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

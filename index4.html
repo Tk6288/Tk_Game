@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云链乡土 - 农产直播培训</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; padding-bottom: 80px; }
+        .hide { display: none; }
+        .nav-active { color: #16a34a; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .check-anim { animation: check-pop 0.3s ease-out forwards; }
+        @keyframes check-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .like-anim { animation: like-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes like-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="bg-green-600 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2" onclick="app.navigate('home')">
+                <i class="fa-solid fa-leaf text-xl"></i>
+                <h1 class="text-lg font-bold">云链乡土</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-sm bg-green-700 px-3 py-1 rounded-full flex items-center">
+                    <i class="fa-solid fa-coins mr-1"></i> <span id="header-points">100</span>
+                </div>
+                <div class="relative cursor-pointer" onclick="alert('购物车')">
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-container" class="max-w-md mx-auto p-4 min-h-screen">
+        <!-- Dynamic Content Injected Here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50">
+        <div class="flex justify-around items-center h-16 max-w-md mx-auto">
+            <button onclick="app.navigate('home')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-home">
+                <i class="fa-solid fa-house text-xl mb-1"></i>
+                <span class="text-[10px]">首页</span>
+            </button>
+            <button onclick="app.navigate('hot-courses')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-hot-courses">
+                <i class="fa-solid fa-fire text-xl mb-1"></i>
+                <span class="text-[10px]">热销课程</span>
+            </button>
+            <button onclick="app.navigate('community')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-community">
+                <i class="fa-solid fa-users-line text-xl mb-1"></i>
+                <span class="text-[10px]">社区</span>
+            </button>
+            <button onclick="app.navigate('courses-points')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-courses-points">
+                <i class="fa-solid fa-graduation-cap text-xl mb-1"></i>
+                <span class="text-[10px]">课程/积分</span>
+            </button>
+            <button onclick="app.navigate('mine')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400" id="nav-mine">
+                <i class="fa-regular fa-user text-xl mb-1"></i>
+                <span class="text-[10px]">我的</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Data Store
+        const db = {
+            user: {
+                name: "王大伯",
+                email: "wang@nongye.com",
+                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                role: "普通用户",
+                bio: "专注柑橘种植20年",
+                farmInfo: {
+                    name: "王大伯生态果园",
+                    address: "江西省赣州市寻乌县",
+                    type: "个体农户"
+                }
+            },
+            flashSale: [
+                { id: 101, title: "直播话术速成：3小时卖爆农货", price: 0.01, originalPrice: 199, sold: 999, img: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 102, title: "短视频拍摄剪辑：田间地头也是大片", price: 8.88, originalPrice: 299, sold: 1542, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 103, title: "私域流量运营：复购率提升100%", price: 9.90, originalPrice: 399, sold: 888, img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            rankingCourses: [
+                { id: 401, title: "2024农产品直播全案策划", price: 199, originalPrice: 499, sold: 12000, img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 402, title: "零基础短视频带货实操", price: 99, originalPrice: 299, sold: 8500, img: "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 403, title: "果树种植与病虫害防治", price: 128, originalPrice: 368, sold: 6200, img: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            streamers: [
+                { id: 201, name: "农哥大壮", title: "全网粉丝500w+", desc: "单场带货破百万，擅长幽默风直播", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 202, name: "果园小妹", title: "水果带货一姐", desc: "亲和力满分，教你如何展示水果细节", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" },
+                { id: 203, name: "山货老张", title: "实诚带货人", desc: "20年农产品经验，教你选品定品", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" }
+            ],
+            mallItems: [
+                { id: 301, type: 'product', title: "专业直播补光灯", points: 500, img: "https://images.unsplash.com/photo-1527011046414-4781f1f94f8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80", desc: "专为直播设计的环形补光灯，三色温调节。" },
+                { id: 302, type: 'product', title: "无线领夹麦克风", points: 800, img: "https://images.unsplash.com/photo-1590845947698-8924d7409b56?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80", desc: "降噪收音，20米远距离传输，户外直播神器。" },
+                { id: 303, type: 'course', title: "手机摄影构图课", points: 300, img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80", desc: "30分钟学会黄金分割、引导线构图，让照片更有质感。" }
+            ],
+            successStories: [
+                { name: "江门激源橘业", prev: 35, current: 86, desc: "通过直播带货，橘子滞销变脱销" },
+                { name: "赣南脐橙合作社", prev: 20, current: 92, desc: "全员培训，线上销量翻三番" },
+                { name: "大别山茶叶铺", prev: 45, current: 78, desc: "品牌化运营，客单价提升50%" }
+            ],
+            history: [
+                { title: "2024农产品电商趋势分析", date: "2023-10-05" },
+                { title: "如何利用AI写文案", date: "2023-09-28" }
+            ],
+            community: {
+                qa: [
+                    { title: "直播间没人气怎么办？", replies: 128 },
+                    { title: "水果快递包装怎么省成本？", replies: 56 }
+                ],
+                live: [
+                    { title: "正在直播：果园实地考察教学", viewer: "1.2w" },
+                    { title: "晚间研讨：明年种什么最赚钱", viewer: "3k" }
+                ],
+                posts: [
+                    { id: 501, type: 'video', title: "老农经验：果树修剪三大误区，你中招了吗？", author: "赵大叔", avatar: "https://randomuser.me/api/portraits/men/32.jpg", likes: 328, isLiked: false, content: "很多果农在修剪时只顾着剪枝，却忽略了光照和通风，导致果实品质下降。今天给大家分享三个修剪时的常见误区，帮助大家避坑...", img: "https://images.unsplash.com/photo-1592323642286-519c8d046305?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" },
+                    { id: 502, type: 'bounty', title: "请问各位老师，这种叶子发黄是什么病？急！", reward: 20, author: "王老实", avatar: "https://randomuser.me/api/portraits/men/45.jpg", likes: 5, isLiked: false, content: "种了三年的砂糖橘，最近发现叶片大面积发黄，用了药也不见好。请问这是缺素还是黄龙病前兆？有悬赏，求专家解答！", img: "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" },
+                    { id: 503, type: 'image', title: "今年收成不错，个个饱满！", author: "李大姐", avatar: "https://randomuser.me/api/portraits/women/44.jpg", likes: 86, isLiked: false, content: "感谢云链乡土的培训，学习了科学施肥和控水，今年的挂果率比去年提高了不少！看这果子，多漂亮！", img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" }
+                ]
+            }
+        };
+
+        // App Logic
+        const app = {
+            state: {
+                view: 'home',
+                points: 100,
+                cart: [],
+                purchased: [],
+                subTabs: {
+                    'courses-points': 'purchased',
+                    'community': 'recommend'
+                }
+            },
+
+            init() {
+                this.navigate('home');
+                this.startTimer();
+            },
+
+            navigate(view, data = null) {
+                this.state.view = view;
+                
+                // Update Nav
+                document.querySelectorAll('.nav-btn').forEach(el => {
+                    el.classList.remove('nav-active', 'text-green-600');
+                    el.classList.add('text-gray-400');
+                });
+                const activeNav = document.getElementById(`nav-${view}`);
+                if(activeNav) {
+                    activeNav.classList.add('nav-active', 'text-green-600');
+                    activeNav.classList.remove('text-gray-400');
+                }
+
+                // Render
+                const container = document.getElementById('app-container');
+                window.scrollTo(0,0);
+
+                // Simple Router
+                if (view === 'home') container.innerHTML = this.renderHome();
+                else if (view === 'hot-courses') container.innerHTML = this.renderHotCourses();
+                else if (view === 'courses-points') container.innerHTML = this.renderCoursesPoints();
+                else if (view === 'community') container.innerHTML = this.renderCommunity();
+                else if (view === 'mine') container.innerHTML = this.renderMine();
+                else if (view === 'course-detail') container.innerHTML = this.renderCourseDetail(data);
+                else if (view === 'streamer-detail') container.innerHTML = this.renderStreamerDetail(data);
+                else if (view === 'product-detail') container.innerHTML = this.renderProductDetail(data);
+                else if (view === 'farmer-entry') container.innerHTML = this.renderFarmerEntry();
+                else if (view === 'hot-ranking') container.innerHTML = this.renderHotRanking();
+                else if (view === 'post-detail') container.innerHTML = this.renderPostDetail(data);
+                else if (view === 'profile-edit') container.innerHTML = this.renderProfileEdit();
+                
+                this.updateHeader();
+            },
+
+            updateHeader() {
+                document.getElementById('header-points').innerText = this.state.points;
+                const badge = document.getElementById('cart-badge');
+                if(this.state.cart.length > 0) {
+                    badge.innerText = this.state.cart.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            },
+
+            setSubTab(parent, tab) {
+                this.state.subTabs[parent] = tab;
+                this.navigate(parent);
+            },
+
+            // --- Render Functions ---
+
+            renderHome() {
+                return `
+                    <!-- Banner -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow mb-4 relative">
+                        <div class="h-40 bg-gray-800 relative">
+                            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-70">
+                            <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center animate-pulse">
+                                <i class="fa-solid fa-circle text-[8px] mr-1"></i> 直播中
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full p-3 text-white bg-gradient-to-t from-black/80 to-transparent">
+                                <h2 class="text-lg font-bold">助农直播间</h2>
+                                <p class="text-xs opacity-90">优质农产品 源头直发</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Grid -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-green-200" onclick="app.navigate('farmer-entry')">
+                            <div class="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center mb-2 text-green-700">
+                                <i class="fa-solid fa-user-plus text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800">农户入驻</h3>
+                            <p class="text-xs text-gray-500 text-center">一键开通 官方扶持</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl shadow-sm flex flex-col items-center justify-center cursor-pointer border border-orange-200" onclick="alert('跳转到培训报名表格')">
+                            <div class="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center mb-2 text-orange-700">
+                                <i class="fa-solid fa-graduation-cap text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800">培训报名</h3>
+                            <p class="text-xs text-gray-500 text-center">电商运营 种植技术</p>
+                        </div>
+                    </div>
+
+                    <!-- Flash Sale Section -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2">秒杀精品课程</h3>
+                            <div class="text-xs text-gray-500">距结束 <span class="bg-red-500 text-white px-1 rounded timer">02:15:30</span></div>
+                        </div>
+                        <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+                            ${db.flashSale.map(c => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="min-w-[140px] bg-white rounded-lg shadow overflow-hidden">
+                                    <img src="${c.img}" class="w-full h-28 object-cover">
+                                    <div class="p-2">
+                                        <div class="font-medium text-sm truncate">${c.title}</div>
+                                        <div class="text-xs text-gray-400 mt-1">已抢 <span class="text-orange-500">✖️${c.sold}</span></div>
+                                        <div class="flex items-end justify-between mt-1">
+                                            <span class="text-red-600 font-bold">¥${c.price}</span>
+                                            <span class="text-xs text-gray-300 line-through">¥${c.originalPrice}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Popular Streamers -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2 mb-3">人气主播</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            ${db.streamers.map(s => `
+                                <div onclick="app.navigate('streamer-detail', ${s.id})" class="bg-white rounded-lg shadow p-2 flex flex-col items-center text-center cursor-pointer relative group">
+                                    <img src="${s.img}" class="w-16 h-16 rounded-full border-2 border-green-100 mb-2 object-cover group-hover:scale-105 transition">
+                                    <div class="text-xs font-bold truncate w-full">${s.name}</div>
+                                    <div class="text-[10px] text-orange-500 mt-1">🔥 人气火爆</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderHotCourses() {
+                return `
+                    <!-- Hot Ranking Teaser -->
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl mb-6 flex items-center justify-between shadow-md cursor-pointer" onclick="app.navigate('hot-ranking')">
+                        <div>
+                            <h2 class="text-xl font-bold text-green-800">热销课程榜</h2>
+                            <p class="text-xs text-green-600 mt-1">查看 TOP 50 榜单 <i class="fa-solid fa-arrow-right text-[10px]"></i></p>
+                        </div>
+                        <i class="fa-solid fa-trophy text-4xl text-yellow-500 drop-shadow-sm"></i>
+                    </div>
+
+                    <!-- Flash Sale Grid -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-stopwatch text-red-500"></i> 限时秒杀</h3>
+                            <span class="text-xs bg-red-100 text-red-500 px-2 py-1 rounded-full timer">02:15:30</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${db.flashSale.map(c => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="bg-white rounded-lg shadow p-3 flex gap-3">
+                                    <img src="${c.img}" class="w-24 h-24 rounded object-cover">
+                                    <div class="flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <h4 class="font-bold text-sm line-clamp-2">${c.title}</h4>
+                                            <div class="text-xs text-gray-500 mt-1">已售 <span class="text-orange-500">✖️${c.sold}</span></div>
+                                        </div>
+                                        <div class="flex justify-between items-end">
+                                            <div>
+                                                <span class="text-red-600 font-bold text-lg">¥${c.price}</span>
+                                                <span class="text-xs text-gray-400 line-through ml-1">¥${c.originalPrice}</span>
+                                            </div>
+                                            ${this.state.purchased.includes(c.id) ? 
+                                                '<span class="text-green-600 text-xs font-bold"><i class="fa-solid fa-check"></i> 已购</span>' : 
+                                                '<button class="bg-green-600 text-white text-xs px-3 py-1.5 rounded-full">抢购</button>'}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Points Mall Preview -->
+                    <div class="mb-20">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-gray-800">积分商城</h3>
+                            <button onclick="app.navigate('courses-points')" class="text-xs text-gray-500">查看更多 <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            ${db.mallItems.slice(0,2).map(item => `
+                                <div onclick="app.navigate('product-detail', ${item.id})" class="bg-white rounded-lg shadow p-2">
+                                    <img src="${item.img}" class="w-full h-24 object-cover rounded mb-2">
+                                    <div class="font-medium text-xs truncate">${item.title}</div>
+                                    <div class="text-orange-500 text-xs font-bold mt-1"><i class="fa-solid fa-coins"></i> ${item.points} 积分</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderCoursesPoints() {
+                const tab = this.state.subTabs['courses-points'];
+                return `
+                    <!-- Points Header -->
+                    <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-xl p-5 text-white mb-4 shadow-lg">
+                        <div class="text-sm opacity-80">我的积分</div>
+                        <div class="text-3xl font-bold mt-1">${this.state.points}</div>
+                        <div class="mt-3 flex gap-2">
+                            <button class="bg-white/20 text-xs px-3 py-1 rounded-full">积分记录</button>
+                            <button class="bg-white text-green-600 font-bold text-xs px-3 py-1 rounded-full">去兑换</button>
+                        </div>
+                    </div>
+
+                    <!-- Sub Tabs -->
+                    <div class="flex border-b border-gray-200 mb-4 bg-white rounded-t-lg">
+                        <div onclick="app.setSubTab('courses-points', 'purchased')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'purchased' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">已购课程</div>
+                        <div onclick="app.setSubTab('courses-points', 'managed')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'managed' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">账号托管</div>
+                        <div onclick="app.setSubTab('courses-points', 'mall')" class="flex-1 text-center py-3 text-sm font-medium cursor-pointer ${tab === 'mall' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">积分商城</div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-20">
+                        ${this.renderCoursesPointsContent(tab)}
+                    </div>
+                `;
+            },
+
+            renderCoursesPointsContent(tab) {
+                if (tab === 'purchased') {
+                    const purchasedItems = [...db.flashSale, ...db.rankingCourses].filter(c => this.state.purchased.includes(c.id));
+                    
+                    let html = '';
+                    if(purchasedItems.length === 0) {
+                        html = `<div class="text-center text-gray-400 py-8 bg-white rounded-lg shadow-sm">暂无已购课程<br><span class="text-xs">快去热销课程选购吧</span></div>`;
+                    } else {
+                        html = purchasedItems.map(c => `
+                            <div class="bg-white p-3 rounded-lg shadow mb-3 flex gap-3">
+                                <img src="${c.img}" class="w-20 h-20 rounded object-cover">
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <h4 class="font-bold text-sm">${c.title}</h4>
+                                    <button class="bg-green-600 text-white text-xs py-1.5 rounded text-center mt-2">立即观看</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+
+                    html += `
+                        <div class="mt-6">
+                            <h3 class="font-bold text-gray-700 mb-3 pl-2 border-l-4 border-gray-400">历史观看</h3>
+                            <div class="space-y-2">
+                                ${db.history.map(h => `
+                                    <div class="bg-white p-3 rounded shadow-sm flex justify-between items-center">
+                                        <div class="text-sm text-gray-800">${h.title}</div>
+                                        <div class="text-xs text-gray-400">${h.date}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    return html;
+                } else if (tab === 'managed') {
+                    return `
+                        <div class="bg-white p-6 rounded-xl shadow">
+                             <div class="text-center mb-4">
+                                <i class="fa-solid fa-user-tie text-5xl text-blue-500 mb-2"></i>
+                                <h2 class="text-lg font-bold">专业账号托管</h2>
+                                <p class="text-xs text-gray-500">官方团队为您提供一站式代运营服务</p>
+                            </div>
+                            <form onsubmit="event.preventDefault(); alert('申请已提交，工作人员将在24小时内联系您');">
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">农户/合作社名称</label>
+                                        <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-green-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">主营产品</label>
+                                        <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-green-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 mb-1">联系电话</label>
+                                        <input type="tel" class="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-green-500" required>
+                                    </div>
+                                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold mt-2">提交申请</button>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                } else if (tab === 'mall') {
+                    return `
+                        <div class="grid grid-cols-2 gap-3">
+                            ${db.mallItems.map(item => `
+                                <div onclick="app.navigate('product-detail', ${item.id})" class="bg-white rounded-lg shadow p-3 cursor-pointer">
+                                    <img src="${item.img}" class="w-full h-28 object-cover rounded mb-2">
+                                    <div class="font-medium text-sm truncate">${item.title}</div>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <div class="text-orange-500 font-bold text-xs"><i class="fa-solid fa-coins"></i> ${item.points}</div>
+                                        <button class="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded">兑换</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+            },
+
+            renderCommunity() {
+                const tab = this.state.subTabs['community'];
+                return `
+                    <div class="bg-white p-2 rounded-xl shadow-sm mb-4 flex">
+                        <button onclick="app.setSubTab('community', 'recommend')" class="flex-1 py-2 text-sm font-bold ${tab === 'recommend' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">推荐</button>
+                        <button onclick="app.setSubTab('community', 'qa')" class="flex-1 py-2 text-sm font-bold ${tab === 'qa' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">问答</button>
+                        <button onclick="app.setSubTab('community', 'live')" class="flex-1 py-2 text-sm font-bold ${tab === 'live' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}">直播</button>
+                    </div>
+
+                    <div class="space-y-3 pb-20">
+                        ${this.renderCommunityContent(tab)}
+                    </div>
+                `;
+            },
+
+            renderCommunityContent(tab) {
+                 if (tab === 'recommend') {
+                    // Masonry-like feed for posts
+                    return `
+                        <div class="columns-2 gap-3 space-y-3">
+                            ${db.community.posts.map(post => `
+                                <div onclick="app.navigate('post-detail', ${post.id})" class="break-inside-avoid bg-white rounded-lg overflow-hidden shadow cursor-pointer">
+                                    <div class="relative">
+                                        <img src="${post.img}" class="w-full h-auto object-cover">
+                                        ${post.type === 'video' ? '<div class="absolute inset-0 flex items-center justify-center bg-black/20"><i class="fa-solid fa-play text-white text-2xl"></i></div>' : ''}
+                                        ${post.type === 'bounty' ? `<div class="absolute top-2 right-2 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded">¥${post.reward}悬赏</div>` : ''}
+                                    </div>
+                                    <div class="p-2">
+                                        <h4 class="text-sm font-bold line-clamp-2 mb-1">${post.title}</h4>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <div class="flex items-center">
+                                                <img src="${post.avatar}" class="w-4 h-4 rounded-full mr-1">
+                                                <span class="truncate max-w-[60px]">${post.author}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="${post.isLiked ? 'fa-solid text-red-500' : 'fa-regular'} fa-heart mr-1"></i> ${post.likes}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (tab === 'qa') {
+                    return db.community.qa.map(q => `
+                        <div class="bg-white p-4 rounded-lg shadow">
+                             <div class="flex items-start gap-2">
+                                <span class="bg-green-100 text-green-700 text-xs px-1.5 py-0.5 rounded font-bold mt-0.5">问</span>
+                                <h4 class="font-bold text-sm text-gray-800">${q.title}</h4>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500 text-right">${q.replies} 个回答</div>
+                        </div>
+                    `).join('');
+                } else if (tab === 'live') {
+                    return db.community.live.map(l => `
+                        <div class="bg-white p-3 rounded-lg shadow flex items-center gap-3">
+                            <div class="relative w-20 h-14 rounded overflow-hidden bg-gray-800">
+                                    <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-white opacity-80"></i></div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm">${l.title}</h4>
+                                <div class="text-xs text-red-500 mt-1 flex items-center gap-1"><span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> ${l.viewer} 在看</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            },
+
+            renderPostDetail(id) {
+                const post = db.community.posts.find(p => p.id == id);
+                return `
+                    <div class="bg-white min-h-screen pb-16">
+                        <div class="sticky top-0 z-20 bg-white border-b border-gray-100 p-3 flex items-center">
+                            <i class="fa-solid fa-arrow-left text-xl cursor-pointer mr-3" onclick="app.navigate('community')"></i>
+                            <img src="${post.avatar}" class="w-8 h-8 rounded-full mr-2">
+                            <span class="font-bold text-sm">${post.author}</span>
+                            <button class="ml-auto bg-red-500 text-white text-xs px-3 py-1 rounded-full">关注</button>
+                        </div>
+                        
+                        <img src="${post.img}" class="w-full h-auto object-cover">
+                        
+                        <div class="p-4">
+                            <h1 class="text-lg font-bold mb-3">${post.title}</h1>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-4">${post.content}</p>
+                            <div class="text-xs text-gray-400 mb-4">发布于 2小时前</div>
+                            
+                            <div class="border-t border-gray-100 pt-4">
+                                <h3 class="font-bold text-sm mb-3">评论 (3)</h3>
+                                <div class="space-y-3">
+                                    <div class="flex gap-2">
+                                        <img src="https://randomuser.me/api/portraits/women/12.jpg" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <div class="text-xs text-gray-500 font-bold">张大妈</div>
+                                            <div class="text-sm text-gray-800">这方法真不错，我也试试！</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 p-3 flex items-center justify-around z-30">
+                            <div class="flex items-center gap-1 text-gray-600" onclick="this.querySelector('i').classList.toggle('fa-solid'); this.querySelector('i').classList.toggle('text-red-500'); this.querySelector('i').classList.add('like-anim')">
+                                <i class="fa-regular fa-heart text-xl"></i> <span class="text-xs">点赞</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <i class="fa-regular fa-star text-xl"></i> <span class="text-xs">收藏</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-gray-600">
+                                <i class="fa-regular fa-comment text-xl"></i> <span class="text-xs">评论</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderFarmerEntry() {
+                return `
+                    <div class="bg-white min-h-screen p-4">
+                        <div class="flex items-center mb-6">
+                            <i class="fa-solid fa-arrow-left text-xl cursor-pointer mr-3" onclick="app.navigate('home')"></i>
+                            <h1 class="text-lg font-bold">农户入驻通道</h1>
+                        </div>
+                        <form onsubmit="event.preventDefault(); alert('入驻申请已提交！工作人员审核通过后将短信通知。'); app.navigate('home');">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">姓名/负责人</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="请输入真实姓名" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">联系电话</label>
+                                    <input type="tel" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="请输入手机号" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">农场/基地位置</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="省/市/区/具体地址" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">入驻类型</label>
+                                    <select class="w-full border border-gray-300 rounded p-2 text-sm">
+                                        <option>个体农户</option>
+                                        <option>农业合作社</option>
+                                        <option>家庭农场</option>
+                                        <option>农业企业</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">主营产品类型</label>
+                                    <select class="w-full border border-gray-300 rounded p-2 text-sm">
+                                        <option>水果生鲜类</option>
+                                        <option>果脯类</option>
+                                        <option>副食品加工类</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">用户信息补充</label>
+                                    <textarea class="w-full border border-gray-300 rounded p-2 text-sm" rows="3" placeholder="简要介绍种植规模、特色产品等信息..."></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold shadow-md mt-4">立即提交申请</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            },
+
+            renderHotRanking() {
+                return `
+                    <div class="bg-green-50 min-h-screen">
+                         <div class="bg-green-600 p-4 pb-12 text-white relative">
+                            <i class="fa-solid fa-arrow-left absolute top-4 left-4 text-xl cursor-pointer" onclick="app.navigate('hot-courses')"></i>
+                            <div class="text-center">
+                                <h1 class="text-xl font-bold">热销课程排行榜</h1>
+                                <p class="text-xs opacity-80 mt-1">实时更新 • 销量为王</p>
+                            </div>
+                        </div>
+                        <div class="-mt-8 px-4 space-y-3 pb-20">
+                            ${db.rankingCourses.map((c, index) => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="bg-white rounded-lg shadow p-3 flex gap-3 items-center">
+                                    <div class="w-8 text-center font-bold text-xl italic ${index === 0 ? 'text-red-500' : (index === 1 ? 'text-orange-500' : (index === 2 ? 'text-yellow-500' : 'text-gray-400'))}">${index + 1}</div>
+                                    <img src="${c.img}" class="w-20 h-20 rounded object-cover">
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-sm">${c.title}</h4>
+                                        <div class="text-xs text-gray-500 mt-1">已售 <span class="text-orange-500">${c.sold}</span> 套</div>
+                                        <div class="text-red-600 font-bold mt-1">¥${c.price}</div>
+                                    </div>
+                                    <button class="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">去看看</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderStreamerDetail(id) {
+                const s = db.streamers.find(x => x.id == id) || db.streamers[0];
+                const sortedStories = [...db.successStories].sort((a, b) => (b.current - b.prev) - (a.current - a.prev));
+
+                return `
+                    <div class="bg-black text-white relative">
+                        <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
+                            <i onclick="app.navigate('hot-courses')" class="fa-solid fa-arrow-left text-xl cursor-pointer shadow-sm"></i>
+                            <img src="${s.img}" class="w-8 h-8 rounded-full border border-white">
+                            <span class="font-bold text-sm">${s.name}</span>
+                        </div>
+                        <div class="h-64 flex items-center justify-center bg-gray-900 relative overflow-hidden">
+                            <img src="${s.img}" class="absolute inset-0 w-full h-full object-cover opacity-50">
+                            <div class="z-10 text-center">
+                                <div class="text-4xl mb-2"><i class="fa-solid fa-play-circle opacity-80"></i></div>
+                                <div class="text-sm font-bold">直播中...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white -mt-4 relative rounded-t-xl z-10">
+                        <h2 class="font-bold text-lg mb-1">${s.title}</h2>
+                        <p class="text-gray-500 text-xs mb-4">${s.desc}</p>
+
+                        <h3 class="font-bold text-sm mb-3 border-l-4 border-green-600 pl-2">推荐直播课程</h3>
+                        <div class="flex gap-3 overflow-x-auto pb-2 mb-6">
+                            ${db.flashSale.slice(0, 2).map(c => `
+                                <div onclick="app.navigate('course-detail', ${c.id})" class="min-w-[120px] bg-gray-50 rounded p-2 border border-gray-100 cursor-pointer">
+                                    <img src="${c.img}" class="w-full h-16 object-cover rounded mb-2">
+                                    <div class="text-xs font-bold truncate">${c.title}</div>
+                                    <div class="text-red-600 font-bold text-xs mt-1">¥${c.price}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <h3 class="font-bold text-sm mb-3 border-l-4 border-green-600 pl-2">合作运营成功案例</h3>
+                        <div class="space-y-3 mb-20">
+                            ${sortedStories.map((st, idx) => `
+                                <div class="bg-white border border-gray-100 rounded shadow-sm p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="font-bold text-sm flex items-center gap-2">
+                                            <span class="bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded text-xs">${idx + 1}</span>
+                                            ${st.name}
+                                        </div>
+                                        <div class="text-green-600 font-bold text-xs"><i class="fa-solid fa-arrow-trend-up"></i> 增长 ${(st.current - st.prev)}%</div>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: ${st.current}%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 flex justify-between">
+                                        <span>前: ${st.prev}%</span>
+                                        <span>后: ${st.current}%</span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1 bg-gray-50 p-1 rounded">${st.desc}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderCourseDetail(id) {
+                // Find in both lists
+                const c = db.flashSale.find(x => x.id == id) || db.rankingCourses.find(x => x.id == id);
+                const isBought = this.state.purchased.includes(id);
+
+                return `
+                    <div class="relative">
+                        <div class="absolute top-4 left-4 z-20 bg-black/30 rounded-full p-1.5 px-3 text-white cursor-pointer" onclick="window.history.length > 1 ? window.history.back() : app.navigate('home')">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </div>
+                        <img src="${c.img}" class="w-full h-64 object-cover">
+                        
+                        <div class="p-4 bg-white rounded-t-xl -mt-4 relative z-10 min-h-screen">
+                            <div class="flex justify-between items-start">
+                                <h1 class="text-xl font-bold text-gray-800 mb-2 w-3/4">${c.title}</h1>
+                                ${isBought ? '<div class="text-green-600 flex flex-col items-center check-anim"><i class="fa-solid fa-circle-check text-2xl"></i><span class="text-[10px] font-bold">已购买</span></div>' : ''}
+                            </div>
+
+                            <div class="flex items-end gap-2 mb-4">
+                                <span class="text-3xl font-bold text-red-600">¥${c.price}</span>
+                                <span class="text-gray-400 line-through text-sm">¥${c.originalPrice}</span>
+                            </div>
+
+                            <!-- Mock Description -->
+                            <div class="bg-gray-50 p-3 rounded-lg mb-4 flex justify-between items-center">
+                                <div>
+                                    <div class="text-xs text-gray-500 mb-1">购买可得</div>
+                                    <div class="text-orange-500 font-bold text-sm"><i class="fa-solid fa-coins"></i> ${Math.floor(c.price * 10)} 积分</div>
+                                </div>
+                                <div class="text-xs text-gray-400 border-l pl-3">
+                                    <div><i class="fa-solid fa-check-circle text-green-500"></i> 随时回放</div>
+                                    <div><i class="fa-solid fa-check-circle text-green-500"></i> 专家答疑</div>
+                                </div>
+                            </div>
+
+                            <h3 class="font-bold text-lg mb-2 border-l-4 border-green-600 pl-2">课程详情</h3>
+                            <div class="text-sm text-gray-600 leading-relaxed space-y-4 mb-20">
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">1. 课程大纲</h4>
+                                    <p>本课程由一线助农主播亲自授课，内容涵盖直播间搭建、产品选品、话术演练等核心环节。从0到1教你如何打造高人气助农直播间。</p>
+                                </div>
+                                
+                                <div class="rounded-lg overflow-hidden my-2 shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1595975604023-01c813699703?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover">
+                                    <div class="bg-gray-50 p-1.5 text-xs text-center text-gray-500 italic">实地教学：田间地头直播实操</div>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">2. 适合人群</h4>
+                                    <ul class="list-disc list-inside pl-1 space-y-1">
+                                        <li>返乡创业青年</li>
+                                        <li>农业种植大户/合作社负责人</li>
+                                        <li>想要转型电商的新农人</li>
+                                    </ul>
+                                </div>
+
+                                <div class="rounded-lg overflow-hidden my-2 shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover">
+                                    <div class="bg-gray-50 p-1.5 text-xs text-center text-gray-500 italic">学员风采：一对一指导场景</div>
+                                </div>
+
+                                <p class="bg-green-50 p-3 rounded text-green-800 text-xs border border-green-100">
+                                    <i class="fa-solid fa-circle-info"></i> 购买后请关注公众号领取配套电子教材。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Bar -->
+                        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3 flex gap-3 z-50">
+                            <div class="flex items-center gap-4 px-2">
+                                <div class="flex flex-col items-center text-xs text-gray-500">
+                                    <i class="fa-solid fa-store text-lg"></i> 店铺
+                                </div>
+                                <div class="flex flex-col items-center text-xs text-gray-500 relative" onclick="alert('Cart Open')">
+                                    <i class="fa-solid fa-cart-shopping text-lg"></i> 
+                                    <span class="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full ${this.state.cart.length ? '' : 'hidden'}"></span>
+                                    购物车
+                                </div>
+                            </div>
+                            ${isBought ? 
+                                `<button class="flex-1 bg-gray-300 text-gray-600 rounded-full font-bold" disabled>已购买</button>` :
+                                `<button onclick="app.addToCart(${c.id})" class="flex-1 bg-orange-400 text-white rounded-l-full font-bold">加入购物车</button>
+                                 <button onclick="app.buy(${c.id}, ${c.price})" class="flex-1 bg-red-600 text-white rounded-r-full font-bold">立即购买</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderProductDetail(id) {
+                const item = db.mallItems.find(x => x.id == id);
+                return `
+                    <div class="bg-white min-h-screen relative">
+                         <div class="absolute top-4 left-4 z-20 bg-black/30 rounded-full p-1.5 px-3 text-white cursor-pointer" onclick="app.navigate('courses-points')">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </div>
+                        <img src="${item.img}" class="w-full h-64 object-cover">
+                        <div class="p-5">
+                            <h1 class="text-xl font-bold mb-2">${item.title}</h1>
+                            <div class="text-orange-500 font-bold text-xl mb-4"><i class="fa-solid fa-coins"></i> ${item.points} 积分</div>
+                            <div class="bg-gray-50 p-4 rounded text-sm text-gray-600 mb-6">
+                                <h3 class="font-bold mb-2">${item.type === 'course' ? '课程简介' : '商品详情'}</h3>
+                                <p>${item.desc || '暂无描述'}</p>
+                                ${item.type === 'course' ? '<p class="mt-2 text-xs text-gray-500">兑换后可直接在“已购课程”中观看。</p>' : '<p class="mt-2 text-xs text-gray-500">兑换后将于3个工作日内发货。</p>'}
+                            </div>
+                            <button class="w-full bg-green-600 text-white font-bold py-3 rounded-full shadow" onclick="alert('积分不足或模拟兑换成功')">立即兑换</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderMine() {
+                const u = db.user;
+                return `
+                    <div class="bg-white rounded-xl p-6 shadow-sm mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
+                                <img src="${u.avatar}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-bold text-lg flex items-center gap-2">
+                                    ${u.name} 
+                                    <span class="bg-green-100 text-green-700 text-[10px] px-1 rounded border border-green-200">${u.role}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">积分: ${this.state.points}</div>
+                                <div class="text-xs text-gray-400 mt-1 truncate">${u.bio}</div>
+                            </div>
+                            <button onclick="app.navigate('profile-edit')" class="text-gray-400 hover:text-green-600"><i class="fa-solid fa-pen-to-square text-xl"></i></button>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                            <span>我的订单</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                             <span>我的课程</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                             <span>联系客服</span> <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderProfileEdit() {
+                const u = db.user;
+                return `
+                    <div class="bg-white min-h-screen p-4 pb-20">
+                        <div class="flex items-center mb-6">
+                            <i class="fa-solid fa-arrow-left text-xl cursor-pointer mr-3" onclick="app.navigate('mine')"></i>
+                            <h1 class="text-lg font-bold">编辑个人资料</h1>
+                        </div>
+                        
+                        <!-- Avatar -->
+                        <div class="flex justify-center mb-6">
+                            <div class="relative">
+                                <img src="${u.avatar}" class="w-24 h-24 rounded-full border-4 border-green-50 shadow-lg object-cover">
+                                <div class="absolute bottom-0 right-0 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm border-2 border-white shadow"><i class="fa-solid fa-camera"></i></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Basic Info -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <h3 class="text-sm font-bold text-green-800 mb-3 border-b border-gray-100 pb-2">基本信息</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">昵称</label>
+                                        <input type="text" id="edit-name" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" value="${u.name}">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">个性签名</label>
+                                        <input type="text" id="edit-bio" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" value="${u.bio}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Farmer Info -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <h3 class="text-sm font-bold text-green-800 mb-3 border-b border-gray-100 pb-2">农户入驻信息</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">农场/店铺名称</label>
+                                        <input type="text" id="edit-farm-name" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" value="${u.farmInfo?.name || ''}" placeholder="未填写">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">经营主体类型</label>
+                                        <select id="edit-farm-type" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none bg-white">
+                                            <option value="个体农户" ${u.farmInfo?.type === '个体农户' ? 'selected' : ''}>个体农户</option>
+                                            <option value="农业合作社" ${u.farmInfo?.type === '农业合作社' ? 'selected' : ''}>农业合作社</option>
+                                            <option value="家庭农场" ${u.farmInfo?.type === '家庭农场' ? 'selected' : ''}>家庭农场</option>
+                                            <option value="农业企业" ${u.farmInfo?.type === '农业企业' ? 'selected' : ''}>农业企业</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">所在地区</label>
+                                        <input type="text" id="edit-farm-addr" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" value="${u.farmInfo?.address || ''}" placeholder="省/市/区">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Info -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                <h3 class="text-sm font-bold text-green-800 mb-3 border-b border-gray-100 pb-2">联系方式</h3>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">邮箱地址</label>
+                                    <input type="email" id="edit-email" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" value="${u.email || ''}" placeholder="example@email.com">
+                                </div>
+                            </div>
+
+                            <button onclick="app.saveProfile()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold shadow-md mt-2 hover:bg-green-700 transition">保存修改</button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            saveProfile() {
+                const name = document.getElementById('edit-name').value;
+                const bio = document.getElementById('edit-bio').value;
+                const email = document.getElementById('edit-email').value;
+                const farmName = document.getElementById('edit-farm-name').value;
+                const farmType = document.getElementById('edit-farm-type').value;
+                const farmAddr = document.getElementById('edit-farm-addr').value;
+
+                if(name) db.user.name = name;
+                if(bio) db.user.bio = bio;
+                if(email) db.user.email = email;
+                
+                if(!db.user.farmInfo) db.user.farmInfo = {};
+                if(farmName) db.user.farmInfo.name = farmName;
+                if(farmType) db.user.farmInfo.type = farmType;
+                if(farmAddr) db.user.farmInfo.address = farmAddr;
+
+                alert('资料已更新');
+                this.navigate('mine');
+            },
+
+            // Actions
+            addToCart(id) {
+                if(!this.state.cart.includes(id)) {
+                    this.state.cart.push(id);
+                    this.updateHeader();
+                    // Refresh current view to update badge
+                    this.navigate(this.state.view, id);
+                    alert('已加入购物车');
+                }
+            },
+
+            buy(id, price) {
+                if(confirm(`确认支付 ¥${price} 购买?`)) {
+                    this.state.purchased.push(id);
+                    this.state.points += Math.floor(price * 10);
+                    this.navigate('course-detail', id); // Refresh to show bought state
+                    alert(`购买成功! 获得 ${Math.floor(price * 10)} 积分`);
+                }
+            },
+
+            startTimer() {
+                setInterval(() => {
+                    const now = new Date();
+                    const end = new Date();
+                    end.setHours(23, 59, 59);
+                    const diff = end - now;
+                    if(diff > 0) {
+                        const h = String(Math.floor(diff / 3600000 % 24)).padStart(2, '0');
+                        const m = String(Math.floor(diff / 60000 % 60)).padStart(2, '0');
+                        const s = String(Math.floor(diff / 1000 % 60)).padStart(2, '0');
+                        document.querySelectorAll('.timer').forEach(el => el.innerText = `${h}:${m}:${s}`);
+                    }
+                }, 1000);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

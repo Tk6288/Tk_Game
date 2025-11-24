@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农产云 - 短视频官方小程序</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+        .hide {
+            display: none;
+        }
+        .active-tab {
+            color: #16a34a; /* green-600 */
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Hide scrollbar for horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="text-gray-800 font-sans">
+
+    <!-- Header -->
+    <header class="bg-green-600 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-leaf text-xl"></i>
+                <h1 class="text-lg font-bold">云链乡土</h1>
+            </div>
+            <div class="text-sm bg-green-700 px-3 py-1 rounded-full flex items-center">
+                <i class="fa-solid fa-video mr-1"></i> 官方号关联中
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="app-content" class="p-4 max-w-md mx-auto">
+        
+        <!-- Section: Home (Dashboard) -->
+        <section id="view-home" class="view-section fade-in">
+            <!-- Banner / Live Status -->
+            <div class="bg-white rounded-xl overflow-hidden card-shadow mb-4 relative">
+                <div class="bg-gray-900 h-40 flex items-center justify-center relative">
+                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover opacity-70" alt="Farm Banner">
+                    <div class="relative z-10 text-center text-white">
+                        <h2 class="text-2xl font-bold mb-1">助农直播间</h2>
+                        <p class="text-sm opacity-90">优质农产品 源头直发</p>
+                    </div>
+                    <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded animate-pulse flex items-center">
+                        <i class="fa-solid fa-circle text-[8px] mr-1"></i> 直播中
+                    </div>
+                </div>
+                <div class="p-3 flex justify-between items-center">
+                    <div>
+                        <div class="text-sm font-bold text-gray-800">下场预告: 晚8点高山苹果专场</div>
+                        <div class="text-xs text-gray-500">主播: 助农小张 | 已预约 1.2w 人</div>
+                    </div>
+                    <button class="bg-green-600 text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-green-700" onclick="openModal('reservation')">
+                        预约
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl card-shadow flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform" onclick="openModal('entry')">
+                    <div class="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center mb-2 text-green-700">
+                        <i class="fa-solid fa-user-plus text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800">农户入驻</h3>
+                    <p class="text-xs text-gray-500 text-center">一键开通 官方扶持</p>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl card-shadow flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform" onclick="switchTab('training')">
+                    <div class="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center mb-2 text-orange-700">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800">培训报名</h3>
+                    <p class="text-xs text-gray-500 text-center">电商运营 种植技术</p>
+                </div>
+            </div>
+
+            <!-- Featured Products Scroll -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2">热销农产品</h3>
+                    <span class="text-xs text-gray-500 cursor-pointer" onclick="switchTab('products')">全部 ></span>
+                </div>
+                <div class="flex overflow-x-auto space-x-4 pb-4 no-scrollbar">
+                    <!-- Product Card 1 -->
+                    <div class="min-w-[140px] bg-white rounded-lg card-shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1568702846905-9f4912c710b8?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-28 object-cover" alt="Apples">
+                        <div class="p-2">
+                            <div class="font-medium text-sm truncate">烟台红富士</div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-red-500 font-bold text-sm">¥45.0</span>
+                                <span class="text-gray-400 text-xs">5斤</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 2 -->
+                    <div class="min-w-[140px] bg-white rounded-lg card-shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-28 object-cover" alt="Oranges">
+                        <div class="p-2">
+                            <div class="font-medium text-sm truncate">赣南脐橙</div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-red-500 font-bold text-sm">¥38.8</span>
+                                <span class="text-gray-400 text-xs">5斤</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 3 -->
+                    <div class="min-w-[140px] bg-white rounded-lg card-shadow overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1582284540020-8acbe03f4924?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-28 object-cover" alt="Rice">
+                        <div class="p-2">
+                            <div class="font-medium text-sm truncate">五常大米</div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-red-500 font-bold text-sm">¥68.0</span>
+                                <span class="text-gray-400 text-xs">10斤</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Preview -->
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-lg border-l-4 border-green-600 pl-2">最新课程</h3>
+                    <span class="text-xs text-gray-500 cursor-pointer" onclick="switchTab('training')">更多 ></span>
+                </div>
+                <div class="bg-white p-3 rounded-xl card-shadow flex gap-3 mb-2 cursor-pointer" onclick="switchTab('training')">
+                    <div class="w-24 h-16 bg-gray-200 rounded-lg overflow-hidden shrink-0">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm mb-1">短视频拍摄剪辑实战课</div>
+                        <div class="text-xs text-gray-500 line-clamp-2">教你如何用手机拍出高质量农产品视频，提升转化率。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Products (Marketplace) -->
+        <section id="view-products" class="view-section hide">
+            <div class="sticky top-0 bg-[#f3f4f6] pt-2 pb-2 z-10">
+                <div class="relative">
+                    <input type="text" placeholder="搜索农产品..." class="w-full pl-9 pr-4 py-2 rounded-full border-none bg-white shadow-sm focus:ring-2 focus:ring-green-500 outline-none">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <div class="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
+                    <button class="px-4 py-1 bg-green-600 text-white rounded-full text-sm whitespace-nowrap">全部</button>
+                    <button class="px-4 py-1 bg-white text-gray-600 rounded-full text-sm shadow-sm whitespace-nowrap">新鲜水果</button>
+                    <button class="px-4 py-1 bg-white text-gray-600 rounded-full text-sm shadow-sm whitespace-nowrap">粮油米面</button>
+                    <button class="px-4 py-1 bg-white text-gray-600 rounded-full text-sm shadow-sm whitespace-nowrap">山珍干货</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-2">
+                <!-- Generated by JS in real app, static here for demo -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden group">
+                    <div class="relative">
+                         <img src="https://images.unsplash.com/photo-1601275868399-45016e388c60?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-36 object-cover" alt="Tea">
+                    </div>
+                    <div class="p-2">
+                        <h4 class="font-medium text-sm truncate">高山云雾茶 明前新茶</h4>
+                        <div class="text-xs text-gray-500 mt-1">安徽六安 · 助农扶贫</div>
+                        <div class="flex justify-between items-end mt-2">
+                            <span class="text-red-500 font-bold">¥128</span>
+                            <button class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-green-700" onclick="alert('已加入购物车')">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="bg-white rounded-lg card-shadow overflow-hidden group">
+                    <div class="relative">
+                         <img src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-36 object-cover" alt="Eggs">
+                    </div>
+                    <div class="p-2">
+                        <h4 class="font-medium text-sm truncate">农家散养土鸡蛋 30枚</h4>
+                        <div class="text-xs text-gray-500 mt-1">现捡现发 · 破损包赔</div>
+                        <div class="flex justify-between items-end mt-2">
+                            <span class="text-red-500 font-bold">¥42</span>
+                            <button class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-green-700" onclick="alert('已加入购物车')">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg card-shadow overflow-hidden group">
+                    <div class="relative">
+                         <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-36 object-cover" alt="Honey">
+                    </div>
+                    <div class="p-2">
+                        <h4 class="font-medium text-sm truncate">纯天然百花土蜂蜜</h4>
+                        <div class="text-xs text-gray-500 mt-1">秦岭深山 · 0添加</div>
+                        <div class="flex justify-between items-end mt-2">
+                            <span class="text-red-500 font-bold">¥58</span>
+                            <button class="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-green-700" onclick="alert('已加入购物车')">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Community -->
+        <section id="view-community" class="view-section hide">
+            <!-- Community Tabs -->
+            <div class="flex items-center justify-between mb-4 bg-white p-2 rounded-xl shadow-sm">
+                <button class="flex-1 text-center font-bold text-green-600 border-b-2 border-green-600 pb-1">推荐</button>
+                <button class="flex-1 text-center text-gray-500 pb-1">问答</button>
+                <button class="flex-1 text-center text-gray-500 pb-1">直播</button>
+            </div>
+
+            <!-- Community Feed (Masonry-like) -->
+            <div class="columns-2 gap-3 space-y-3">
+                
+                <!-- Post: Video Share -->
+                <div class="break-inside-avoid bg-white rounded-lg overflow-hidden card-shadow group cursor-pointer">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1592323642286-519c8d046305?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-auto object-cover" alt="Pruning">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <i class="fa-solid fa-play text-white text-2xl opacity-80"></i>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <h4 class="text-sm font-bold line-clamp-2 mb-1">老农经验：果树修剪三大误区，你中招了吗？</h4>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <div class="flex items-center">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-4 h-4 rounded-full mr-1">
+                                <span>赵大叔</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fa-regular fa-heart mr-1"></i> 328
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post: Q&A with Bounty -->
+                <div class="break-inside-avoid bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-3 card-shadow cursor-pointer border border-orange-100">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-orange-100 text-orange-600 text-[10px] px-1.5 py-0.5 rounded font-bold">求助</span>
+                        <span class="flex items-center text-orange-600 text-xs font-bold">
+                            <i class="fa-solid fa-coins mr-1"></i> ¥20
+                        </span>
+                    </div>
+                    <h4 class="text-sm font-bold mb-2">请问各位老师，这种叶子发黄是什么病？急！</h4>
+                    <p class="text-xs text-gray-600 line-clamp-3 mb-2">种了三年的砂糖橘，最近发现叶片大面积发黄，用了药也不见好...</p>
+                    <div class="flex items-center justify-between text-xs text-gray-400 border-t border-orange-100 pt-2">
+                        <span>5人已回答</span>
+                        <button class="bg-orange-500 text-white px-2 py-1 rounded-full">去回答</button>
+                    </div>
+                </div>
+
+                <!-- Post: Live Link -->
+                <div class="break-inside-avoid bg-white rounded-lg overflow-hidden card-shadow relative cursor-pointer">
+                    <div class="bg-gray-800 relative h-48">
+                        <img src="https://images.unsplash.com/photo-1530507629858-e49769a7d975?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded animate-pulse flex items-center">
+                            <i class="fa-solid fa-tower-broadcast mr-1"></i> 直播中
+                        </div>
+                        <div class="absolute bottom-2 left-2 text-white">
+                            <div class="text-xs font-bold">张家果园</div>
+                            <div class="text-[10px] opacity-80">正在讲解套袋技巧</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post: Image Share -->
+                <div class="break-inside-avoid bg-white rounded-lg overflow-hidden card-shadow">
+                    <img src="https://images.unsplash.com/photo-1615931632997-c5b2e302bfd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-auto object-cover">
+                    <div class="p-2">
+                        <h4 class="text-sm font-bold line-clamp-2 mb-1">今年收成不错，个个饱满！</h4>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <div class="flex items-center">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-4 h-4 rounded-full mr-1">
+                                <span>李大姐</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fa-regular fa-heart mr-1"></i> 86
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floating Action Button for Post -->
+            <button class="fixed bottom-20 right-4 bg-green-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center z-40 hover:scale-105 transition-transform" onclick="alert('发布新帖子')">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+        </section>
+
+        <!-- Section: Services & Training -->
+        <section id="view-training" class="view-section hide">
+            <div class="bg-green-600 p-4 rounded-xl text-white mb-6 shadow-lg">
+                <h2 class="text-xl font-bold mb-2">农户成长计划</h2>
+                <p class="text-sm opacity-90 mb-3">提升技能，让手机成为新农具</p>
+                <div class="flex gap-2">
+                    <span class="bg-white/20 px-2 py-1 rounded text-xs">电商培训</span>
+                    <span class="bg-white/20 px-2 py-1 rounded text-xs">账号托管</span>
+                    <span class="bg-white/20 px-2 py-1 rounded text-xs">流量扶持</span>
+                </div>
+            </div>
+
+            <!-- Tab Switcher for Service Sub-views -->
+            <div class="flex border-b border-gray-200 mb-4">
+                <button class="flex-1 pb-2 text-green-600 border-b-2 border-green-600 font-medium text-sm" id="subtab-training-btn" onclick="switchSubTab('training')">课程培训</button>
+                <button class="flex-1 pb-2 text-gray-500 font-medium text-sm" id="subtab-custody-btn" onclick="switchSubTab('custody')">账号托管</button>
+            </div>
+
+            <!-- Sub-view: Training List -->
+            <div id="subview-training">
+                <div class="space-y-3">
+                     <div class="bg-white p-3 rounded-lg card-shadow flex gap-3">
+                        <div class="w-32 h-20 bg-gray-200 rounded overflow-hidden shrink-0 relative">
+                             <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
+                             <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 text-center">回放可看</div>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-between">
+                            <h4 class="font-bold text-sm">零基础直播带货入门</h4>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">讲师: 李运营</span>
+                                <button class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded" onclick="alert('开始播放')">立即观看</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg card-shadow flex gap-3">
+                        <div class="w-32 h-20 bg-gray-200 rounded overflow-hidden shrink-0 relative">
+                             <img src="https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
+                             <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 text-center">2月20日 19:00</div>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-between">
+                            <h4 class="font-bold text-sm">春季果树修剪技术指导</h4>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">讲师: 王教授</span>
+                                <button class="text-xs bg-green-600 text-white px-2 py-1 rounded" onclick="alert('报名成功')">立即报名</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-view: Custody Service -->
+            <div id="subview-custody" class="hide">
+                <div class="bg-white p-5 rounded-lg card-shadow">
+                    <h3 class="font-bold mb-2 text-center">申请账号托管服务</h3>
+                    <p class="text-xs text-gray-500 mb-4 text-center">不懂运营？没时间直播？官方团队为您提供一站式代运营服务。</p>
+                    
+                    <form class="space-y-3" onsubmit="event.preventDefault(); alert('申请已提交，工作人员将在24小时内联系您');">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">农户/合作社名称</label>
+                            <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">主营产品</label>
+                            <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">联系电话</label>
+                            <input type="tel" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 outline-none" required>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 mt-2">提交申请</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Services/Entry (Actually combined with Training/Services in Logic, but let's make a dedicated 'Entry' view for clarity or handle via popups. Here let's reuse Training for simplicity or make a dedicated Profile/Mine section) -->
+        
+        <!-- Section: Mine / Profile -->
+        <section id="view-mine" class="view-section hide">
+            <div class="bg-white p-4 rounded-xl card-shadow mb-4 flex items-center">
+                <div class="w-14 h-14 rounded-full bg-gray-200 mr-3 overflow-hidden">
+                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">王大伯</h3>
+                    <p class="text-xs text-gray-500">普通用户 | 已实名认证</p>
+                </div>
+                <button class="ml-auto text-xs border border-gray-300 px-3 py-1 rounded-full">编辑资料</button>
+            </div>
+
+            <!-- Order Status -->
+            <div class="bg-white p-4 rounded-xl card-shadow mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-bold text-sm">我的订单</h4>
+                    <span class="text-xs text-gray-500">全部订单 ></span>
+                </div>
+                <div class="flex justify-between text-center">
+                    <div class="flex flex-col items-center cursor-pointer">
+                        <i class="fa-regular fa-credit-card text-xl text-gray-600 mb-1"></i>
+                        <span class="text-xs text-gray-600">待付款</span>
+                    </div>
+                     <div class="flex flex-col items-center cursor-pointer">
+                        <i class="fa-solid fa-box-open text-xl text-gray-600 mb-1"></i>
+                        <span class="text-xs text-gray-600">待发货</span>
+                    </div>
+                     <div class="flex flex-col items-center cursor-pointer">
+                        <i class="fa-solid fa-truck text-xl text-gray-600 mb-1"></i>
+                        <span class="text-xs text-gray-600">待收货</span>
+                    </div>
+                     <div class="flex flex-col items-center cursor-pointer">
+                        <i class="fa-regular fa-comment-dots text-xl text-gray-600 mb-1"></i>
+                        <span class="text-xs text-gray-600">售后/客服</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools List -->
+            <div class="bg-white rounded-xl card-shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="openModal('entry')">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-store text-green-600 w-6"></i>
+                        <span class="text-sm text-gray-700">农户入驻通道</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                </div>
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="openModal('reservation')">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-calendar-check text-blue-500 w-6"></i>
+                        <span class="text-sm text-gray-700">直播场次预约</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                </div>
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="alert('跳转订单实时查询系统')">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-magnifying-glass-location text-orange-500 w-6"></i>
+                        <span class="text-sm text-gray-700">订单实时查询</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                </div>
+                <div class="p-4 flex justify-between items-center cursor-pointer" onclick="alert('连接人工客服...')">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-headset text-purple-500 w-6"></i>
+                        <span class="text-sm text-gray-700">售后咨询</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Generic Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl w-full max-w-sm overflow-hidden animate-bounce-in">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modal-title">标题</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 max-h-[70vh] overflow-y-auto" id="modal-content">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Templates for Modals -->
+    <div id="tpl-entry-form" class="hidden">
+        <form onsubmit="event.preventDefault(); closeModal(); alert('入驻申请已提交！工作人员审核通过后将短信通知。');">
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">姓名/负责人</label>
+                    <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="请输入真实姓名" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">联系电话</label>
+                    <input type="tel" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="请输入手机号" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">农场/基地位置</label>
+                    <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="省/市/区/具体地址" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">入驻类型</label>
+                    <select class="w-full border border-gray-300 rounded p-2 text-sm">
+                        <option>个体农户</option>
+                        <option>农业合作社</option>
+                        <option>家庭农场</option>
+                        <option>农业企业</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">主营产品类型</label>
+                    <select class="w-full border border-gray-300 rounded p-2 text-sm">
+                        <option>水果生鲜类</option>
+                        <option>果脯类</option>
+                        <option>副食品加工类</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">用户信息补充</label>
+                    <textarea class="w-full border border-gray-300 rounded p-2 text-sm" rows="2" placeholder="简要介绍种植规模、特色产品等信息..."></textarea>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700">立即提交申请</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="tpl-live-reservation" class="hidden">
+        <div class="space-y-3">
+            <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fa-solid fa-calendar-day text-green-600"></i>
+                    <span class="font-bold text-sm">可预约场次</span>
+                </div>
+                <p class="text-xs text-green-700">预约后，我们将为您预留直播排期并提供流量支持。</p>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-sm">3月1日 (周六) 晚8点</div>
+                        <div class="text-xs text-gray-500">黄金档 · 流量高峰</div>
+                    </div>
+                    <button class="bg-green-600 text-white text-xs px-3 py-1 rounded" onclick="closeModal(); alert('预约成功！已为您锁定 3月1日 档期');">预约</button>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-sm">3月2日 (周日) 下午3点</div>
+                        <div class="text-xs text-gray-500">午后档 · 休闲专场</div>
+                    </div>
+                    <button class="bg-white border border-green-600 text-green-600 text-xs px-3 py-1 rounded hover:bg-green-50" onclick="closeModal(); alert('预约成功！已为您锁定 3月2日 档期');">预约</button>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-sm">3月5日 (周三) 晚7点</div>
+                        <div class="text-xs text-gray-500">平日档 · 精准流量</div>
+                    </div>
+                    <button class="bg-white border border-green-600 text-green-600 text-xs px-3 py-1 rounded hover:bg-green-50" onclick="closeModal(); alert('预约成功！已为您锁定 3月5日 档期');">预约</button>
+                </div>
+            </div>
+            
+            <div class="text-center pt-2">
+                <button class="text-xs text-gray-400 underline">查看更多排期</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 pb-safe-area shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
+        <div class="flex justify-around items-center h-16 max-w-md mx-auto">
+            <button class="nav-btn active-tab flex flex-col items-center justify-center w-full h-full" onclick="switchTab('home')">
+                <i class="fa-solid fa-house text-xl mb-1"></i>
+                <span class="text-[10px]">首页</span>
+            </button>
+            <button class="nav-btn text-gray-400 flex flex-col items-center justify-center w-full h-full" onclick="switchTab('products')">
+                <i class="fa-solid fa-basket-shopping text-xl mb-1"></i>
+                <span class="text-[10px]">农产</span>
+            </button>
+            <button class="nav-btn text-gray-400 flex flex-col items-center justify-center w-full h-full" onclick="switchTab('community')">
+                <i class="fa-solid fa-users-line text-xl mb-1"></i>
+                <span class="text-[10px]">社区</span>
+            </button>
+            <button class="nav-btn text-gray-400 flex flex-col items-center justify-center w-full h-full" onclick="switchTab('training')">
+                <i class="fa-solid fa-chalkboard-user text-xl mb-1"></i>
+                <span class="text-[10px]">培训/服务</span>
+            </button>
+            <button class="nav-btn text-gray-400 flex flex-col items-center justify-center w-full h-full" onclick="switchTab('mine')">
+                <i class="fa-regular fa-user text-xl mb-1"></i>
+                <span class="text-[10px]">我的</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Modal Logic
+        function openModal(type) {
+            const modal = document.getElementById('modal-overlay');
+            const titleEl = document.getElementById('modal-title');
+            const contentEl = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            
+            if (type === 'entry') {
+                titleEl.textContent = '农户入驻通道';
+                contentEl.innerHTML = document.getElementById('tpl-entry-form').innerHTML;
+            } else if (type === 'reservation') {
+                titleEl.textContent = '直播场次预约';
+                contentEl.innerHTML = document.getElementById('tpl-live-reservation').innerHTML;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        // Main Navigation Logic
+        function switchTab(tabName) {
+            // Update Navigation Buttons
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const tabNames = ['home', 'products', 'community', 'training', 'mine'];
+            
+            navButtons.forEach((btn, index) => {
+                if (tabNames[index] === tabName) {
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-gray-400');
+                } else {
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-gray-400');
+                }
+            });
+
+            // Show/Hide Sections
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(sec => {
+                if (sec.id === `view-${tabName}`) {
+                    sec.classList.remove('hide');
+                } else {
+                    sec.classList.add('hide');
+                }
+            });
+
+            window.scrollTo(0,0);
+        }
+
+        // Sub-tab logic for Training/Custody
+        function switchSubTab(subTabName) {
+            const trainingBtn = document.getElementById('subtab-training-btn');
+            const custodyBtn = document.getElementById('subtab-custody-btn');
+            const trainingView = document.getElementById('subview-training');
+            const custodyView = document.getElementById('subview-custody');
+
+            if (subTabName === 'training') {
+                trainingBtn.classList.add('text-green-600', 'border-green-600');
+                trainingBtn.classList.remove('text-gray-500');
+                custodyBtn.classList.remove('text-green-600', 'border-green-600');
+                custodyBtn.classList.add('text-gray-500');
+                
+                trainingView.classList.remove('hide');
+                custodyView.classList.add('hide');
+            } else {
+                custodyBtn.classList.add('text-green-600', 'border-green-600');
+                custodyBtn.classList.remove('text-gray-500');
+                trainingBtn.classList.remove('text-green-600', 'border-green-600');
+                trainingBtn.classList.add('text-gray-500');
+                
+                custodyView.classList.remove('hide');
+                trainingView.classList.add('hide');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,811 @@
+<!-- Top Header -->
+<header class="bg-white sticky top-0 z-40 px-4 py-3 flex justify-between items-center shadow-sm">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+            <i class="fa-solid fa-leaf"></i>
+        </div>
+        <h1 class="font-bold text-lg tracking-tight">云链乡土</h1>
+    </div>
+    <div class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+        <i class="fa-brands fa-tiktok"></i> 官方号关联中
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="app" class="max-w-md mx-auto relative">
+
+    <!-- VIEW: HOME -->
+    <section id="tab-home" class="view-section fade-in p-3 space-y-4">
+        
+        <!-- Live Banner -->
+        <div class="relative h-40 rounded-2xl overflow-hidden shadow-md bg-gray-900">
+            <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover opacity-80">
+            <div class="absolute top-3 right-3 live-badge text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                <span class="w-1.5 h-1.5 bg-white rounded-full"></span> 直播中
+            </div>
+            <div class="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent text-white">
+                <h3 class="font-bold text-lg">助农直播间：高山苹果专场</h3>
+                <div class="flex justify-between items-end mt-1">
+                    <span class="text-xs opacity-90">主播：助农小张 | 1.2w人在线</span>
+                    <button onclick="openModal('reservation')" class="bg-green-500 hover:bg-green-600 text-xs px-3 py-1.5 rounded-full font-medium transition-colors">
+                        预约下场
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Actions -->
+        <div class="grid grid-cols-2 gap-3">
+            <div onclick="openModal('entry')" class="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between active:scale-95 transition-transform">
+                <div>
+                    <div class="font-bold text-sm text-gray-800">农户入驻</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">官方扶持 一键开通</div>
+                </div>
+                <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-lg">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+            </div>
+            <div onclick="switchTab('hot')" class="bg-white p-3 rounded-xl shadow-sm flex items-center justify-between active:scale-95 transition-transform">
+                <div>
+                    <div class="font-bold text-sm text-gray-800">秒杀课程</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">低至 0.01元 起</div>
+                </div>
+                <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-500 text-lg">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Flash Sale Courses -->
+        <div class="bg-white rounded-xl p-3 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-gray-900">秒杀精品课程</h3>
+                    <span class="bg-red-100 text-red-600 text-[10px] px-1.5 rounded">限时</span>
+                </div>
+                <span onclick="switchTab('hot')" class="text-xs text-gray-400 flex items-center">更多 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></span>
+            </div>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+                <!-- Item 1 -->
+                <div onclick="openCourseDetail(1)" class="min-w-[130px] group cursor-pointer">
+                    <div class="relative rounded-lg overflow-hidden mb-2">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&q=80" class="w-full h-24 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 text-center py-0.5">已抢×999</div>
+                    </div>
+                    <div class="text-xs font-medium line-clamp-1 mb-1">短视频剪辑速成</div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-red-500 font-bold text-sm price-tag">¥0.01</span>
+                        <span class="text-gray-400 text-[10px] line-through">¥199</span>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div onclick="openCourseDetail(2)" class="min-w-[130px] group cursor-pointer">
+                    <div class="relative rounded-lg overflow-hidden mb-2">
+                        <img src="https://images.unsplash.com/photo-1472289065668-ce650ac443d2?w=300&q=80" class="w-full h-24 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 text-center py-0.5">已抢×999</div>
+                    </div>
+                    <div class="text-xs font-medium line-clamp-1 mb-1">直播带货话术大全</div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-red-500 font-bold text-sm price-tag">¥8.88</span>
+                        <span class="text-gray-400 text-[10px] line-through">¥299</span>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div onclick="openCourseDetail(3)" class="min-w-[130px] group cursor-pointer">
+                    <div class="relative rounded-lg overflow-hidden mb-2">
+                        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&q=80" class="w-full h-24 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 text-center py-0.5">已抢×999</div>
+                    </div>
+                    <div class="text-xs font-medium line-clamp-1 mb-1">流量变现秘籍</div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-red-500 font-bold text-sm price-tag">¥9.90</span>
+                        <span class="text-gray-400 text-[10px] line-through">¥399</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Popular Streamers -->
+        <div class="bg-white rounded-xl p-3 shadow-sm">
+            <h3 class="font-bold text-gray-900 mb-3">人气主播推荐</h3>
+            <div class="grid grid-cols-3 gap-3">
+                <div onclick="openStreamer(1)" class="flex flex-col items-center gap-2">
+                    <div class="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 to-pink-500 relative">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" class="w-full h-full rounded-full object-cover border-2 border-white">
+                        <div class="absolute -bottom-1 bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full">人气Top1</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs font-bold">果园小李</div>
+                        <div class="text-[10px] text-gray-500">销量10w+</div>
+                    </div>
+                </div>
+                <div onclick="openStreamer(2)" class="flex flex-col items-center gap-2">
+                    <div class="w-14 h-14 rounded-full p-0.5 bg-gray-200">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-full h-full rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs font-bold">强哥山货</div>
+                        <div class="text-[10px] text-gray-500">金牌讲师</div>
+                    </div>
+                </div>
+                <div onclick="openStreamer(3)" class="flex flex-col items-center gap-2">
+                    <div class="w-14 h-14 rounded-full p-0.5 bg-gray-200">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-full h-full rounded-full object-cover border-2 border-white">
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs font-bold">茶山阿妹</div>
+                        <div class="text-[10px] text-gray-500">好评99%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIEW: HOT COURSES -->
+    <section id="tab-hot" class="view-section fade-in hide">
+        <!-- Sticky Search -->
+        <div class="sticky top-[57px] bg-[#f8f9fa] z-30 p-3">
+            <div class="bg-white rounded-full h-9 flex items-center px-4 shadow-sm">
+                <i class="fa-solid fa-search text-gray-400 text-sm mr-2"></i>
+                <input type="text" placeholder="搜索热门课程..." class="bg-transparent flex-1 text-sm outline-none">
+            </div>
+        </div>
+
+        <!-- Countdown Header -->
+        <div class="mx-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl p-3 text-white shadow-lg mb-4 flex justify-between items-center">
+            <div>
+                <div class="font-bold text-lg italic"><i class="fa-solid fa-fire mr-1"></i>限时秒杀</div>
+                <div class="text-xs opacity-90 mt-1 flex gap-1">
+                    <span>距结束</span>
+                    <span class="bg-white text-red-500 px-1 rounded font-mono font-bold">02</span>:
+                    <span class="bg-white text-red-500 px-1 rounded font-mono font-bold">15</span>:
+                    <span class="bg-white text-red-500 px-1 rounded font-mono font-bold">30</span>
+                </div>
+            </div>
+            <i class="fa-regular fa-clock text-4xl opacity-30"></i>
+        </div>
+
+        <!-- Streamer Horizontal List -->
+        <div class="pl-3 mb-4">
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pr-3">
+                <div onclick="openStreamer(1)" class="flex flex-col items-center min-w-[60px]">
+                    <div class="w-12 h-12 rounded-full p-0.5 border-2 border-red-500 relative">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" class="w-full h-full rounded-full object-cover">
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div>
+                    <div class="text-[10px] mt-1 font-medium truncate w-full text-center">果园小李</div>
+                </div>
+                <div onclick="openStreamer(2)" class="flex flex-col items-center min-w-[60px]">
+                    <div class="w-12 h-12 rounded-full p-0.5 border border-gray-300">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-full h-full rounded-full object-cover">
+                    </div>
+                    <div class="text-[10px] mt-1 font-medium truncate w-full text-center">强哥山货</div>
+                </div>
+                <div onclick="openStreamer(3)" class="flex flex-col items-center min-w-[60px]">
+                    <div class="w-12 h-12 rounded-full p-0.5 border border-gray-300">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-full h-full rounded-full object-cover">
+                    </div>
+                    <div class="text-[10px] mt-1 font-medium truncate w-full text-center">茶山阿妹</div>
+                </div>
+                <div class="flex flex-col items-center min-w-[60px]">
+                    <div class="w-12 h-12 rounded-full p-0.5 border border-gray-300 bg-gray-100 flex items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                    <div class="text-[10px] mt-1 font-medium">更多</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points Mall Teaser -->
+        <div onclick="switchTab('courses'); switchSubTab('mall')" class="mx-3 mb-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-white shadow-md flex items-center justify-between cursor-pointer">
+            <div>
+                <h3 class="font-bold"><i class="fa-solid fa-gift mr-2"></i>积分商城</h3>
+                <p class="text-xs opacity-80 mt-1">听课赚积分，好礼免费换</p>
+            </div>
+            <div class="bg-white/20 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-arrow-right text-sm"></i>
+            </div>
+        </div>
+
+        <!-- Course List -->
+        <div class="px-3 space-y-3 pb-4">
+            <!-- Course Card 1 -->
+            <div onclick="openCourseDetail(1)" class="bg-white p-3 rounded-xl shadow-sm flex gap-3 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-orange-100 text-orange-600 text-[10px] px-2 py-0.5 rounded-bl-lg font-bold">秒杀中</div>
+                <div class="w-28 h-20 bg-gray-200 rounded-lg overflow-hidden shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&q=80" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 w-full bg-black/60 text-white text-[10px] text-center py-0.5">已抢×999</div>
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 line-clamp-1">短视频拍摄剪辑实战课</h4>
+                        <div class="text-xs text-gray-500 mt-1">讲师：李运营</div>
+                    </div>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <span class="text-red-500 font-bold text-lg price-tag">¥9.9</span>
+                            <span class="text-gray-400 text-xs line-through ml-1">¥299</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); alert('已加入购物车')" class="w-7 h-7 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200">
+                            <i class="fa-solid fa-cart-plus text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Card 2 (Purchased) -->
+            <div onclick="openCourseDetail(4)" class="bg-white p-3 rounded-xl shadow-sm flex gap-3 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-green-100 text-green-600 text-[10px] px-2 py-0.5 rounded-bl-lg font-bold">
+                    <i class="fa-solid fa-check mr-1"></i>已购
+                </div>
+                <div class="w-28 h-20 bg-gray-200 rounded-lg overflow-hidden shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&q=80" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 w-full bg-black/60 text-white text-[10px] text-center py-0.5">已抢×2.5k</div>
+                </div>
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 line-clamp-1">农产品电商运营全攻略</h4>
+                        <div class="text-xs text-gray-500 mt-1">讲师：王教授</div>
+                    </div>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <span class="text-red-500 font-bold text-lg price-tag">¥128</span>
+                            <span class="text-gray-400 text-xs ml-1">永久回放</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIEW: COMMUNITY -->
+    <section id="tab-community" class="view-section fade-in hide h-full">
+        <!-- Comm Tabs -->
+        <div class="sticky top-[57px] bg-[#f8f9fa] z-30 px-3 pt-2 pb-3">
+            <div class="flex bg-white p-1 rounded-lg shadow-sm">
+                <button onclick="switchCommTab(this, 'rec')" class="comm-tab flex-1 text-center text-sm py-1.5 font-bold text-green-600 bg-green-50 rounded-md transition-all">推荐</button>
+                <button onclick="switchCommTab(this, 'qa')" class="comm-tab flex-1 text-center text-sm py-1.5 text-gray-500 transition-all">问答</button>
+                <button onclick="switchCommTab(this, 'live')" class="comm-tab flex-1 text-center text-sm py-1.5 text-gray-500 transition-all">直播</button>
+            </div>
+        </div>
+
+        <!-- Feed Content -->
+        <div class="px-3 pb-20">
+            
+            <!-- Recommend Feed (Masonry Sim) -->
+            <div id="feed-rec" class="columns-2 gap-3 space-y-3">
+                <div class="break-inside-avoid bg-white rounded-xl overflow-hidden shadow-sm">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1592323642286-519c8d046305?w=300&q=80" class="w-full h-auto">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/20"><i class="fa-solid fa-play text-white"></i></div>
+                    </div>
+                    <div class="p-2">
+                        <div class="text-sm font-bold line-clamp-2 leading-tight">老农经验：果树修剪误区</div>
+                        <div class="flex items-center justify-between mt-2 text-[10px] text-gray-500">
+                            <div class="flex items-center gap-1"><img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-4 h-4 rounded-full"> 赵大叔</div>
+                            <span><i class="fa-regular fa-heart"></i> 328</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="break-inside-avoid bg-white rounded-xl overflow-hidden shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1615931632997-c5b2e302bfd8?w=300&q=80" class="w-full h-auto">
+                    <div class="p-2">
+                        <div class="text-sm font-bold line-clamp-2 leading-tight">今年收成不错，个个饱满！</div>
+                        <div class="flex items-center justify-between mt-2 text-[10px] text-gray-500">
+                            <div class="flex items-center gap-1"><img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-4 h-4 rounded-full"> 李大姐</div>
+                            <span><i class="fa-regular fa-heart"></i> 86</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q&A Feed -->
+            <div id="feed-qa" class="hide space-y-3">
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-orange-100">
+                    <div class="flex justify-between mb-2">
+                        <span class="bg-orange-100 text-orange-600 text-[10px] px-1.5 py-0.5 rounded font-bold">求助</span>
+                        <span class="text-orange-600 text-xs font-bold"><i class="fa-solid fa-coins mr-1"></i>¥20</span>
+                    </div>
+                    <h4 class="font-bold text-sm mb-1">请问各位老师，这种叶子发黄是什么病？急！</h4>
+                    <p class="text-xs text-gray-500 line-clamp-2 mb-3">种了三年的砂糖橘，最近发现叶片大面积发黄...</p>
+                    <div class="flex justify-between items-center text-xs pt-2 border-t border-gray-50">
+                        <span class="text-gray-400">5人已回答</span>
+                        <button class="bg-orange-500 text-white px-3 py-1 rounded-full">去回答</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Feed -->
+            <div id="feed-live" class="hide space-y-3">
+                <div onclick="openStreamer(1)" class="bg-gray-900 rounded-xl overflow-hidden shadow-sm relative h-40">
+                    <img src="https://images.unsplash.com/photo-1530507629858-e49769a7d975?w=300&q=80" class="w-full h-full object-cover opacity-80">
+                    <div class="absolute top-2 left-2 live-badge text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+                         <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> 直播中
+                    </div>
+                    <div class="absolute bottom-2 left-2 text-white">
+                        <div class="text-sm font-bold">张家果园</div>
+                        <div class="text-xs opacity-90">正在讲解套袋技巧</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- FAB -->
+        <button onclick="alert('发布功能开发中')" class="fixed bottom-24 right-4 bg-green-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center z-30 hover:scale-110 transition-transform">
+            <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </section>
+
+    <!-- VIEW: COURSES / POINTS -->
+    <section id="tab-courses" class="view-section fade-in hide">
+        <!-- Header -->
+        <div class="bg-green-600 px-4 pt-4 pb-10 text-white">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold">学习中心</h2>
+                    <p class="text-xs opacity-80">技能改变生活</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs opacity-80">当前积分</div>
+                    <div class="text-2xl font-bold">100</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub Tabs Card -->
+        <div class="mx-3 -mt-6 bg-white rounded-xl shadow-sm p-1 flex mb-4 relative z-10">
+            <button onclick="switchSubTab('purchased')" id="st-purchased" class="sub-tab active flex-1 py-2 text-sm font-bold text-green-600 border-b-2 border-green-600">已购课程</button>
+            <button onclick="switchSubTab('custody')" id="st-custody" class="sub-tab flex-1 py-2 text-sm text-gray-500 border-b-2 border-transparent">账号托管</button>
+            <button onclick="switchSubTab('mall')" id="st-mall" class="sub-tab flex-1 py-2 text-sm text-gray-500 border-b-2 border-transparent">积分商城</button>
+        </div>
+
+        <div class="px-3 pb-4">
+            <!-- Subview: Purchased -->
+            <div id="sv-purchased" class="sub-view space-y-4">
+                <div class="bg-white p-3 rounded-xl shadow-sm flex gap-3">
+                    <div class="w-32 h-20 bg-gray-200 rounded-lg overflow-hidden relative">
+                         <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=300&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <h4 class="text-sm font-bold">零基础直播带货入门</h4>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500">进度 85%</span>
+                            <button onclick="alert('播放视频')" class="bg-green-600 text-white text-xs px-3 py-1 rounded-full">立即观看</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-sm text-gray-700 mb-2 ml-1">历史观看</h3>
+                    <div class="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+                        <div class="p-3 flex items-center gap-3">
+                            <i class="fa-regular fa-circle-play text-gray-400 text-lg"></i>
+                            <div class="text-xs">
+                                <div class="text-gray-800">春季果树修剪技术指导 - 第2课</div>
+                                <div class="text-gray-400 mt-0.5">观看至 12:30</div>
+                            </div>
+                        </div>
+                        <div class="p-3 flex items-center gap-3">
+                            <i class="fa-regular fa-circle-play text-gray-400 text-lg"></i>
+                            <div class="text-xs">
+                                <div class="text-gray-800">农产品包装设计技巧</div>
+                                <div class="text-gray-400 mt-0.5">观看至 05:10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subview: Custody -->
+            <div id="sv-custody" class="sub-view hide">
+                <div class="bg-white p-5 rounded-xl shadow-sm text-center">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">专业账号托管服务</h3>
+                    <p class="text-xs text-gray-500 mb-6 px-4">官方运营团队介入，提供内容策划、直播代播、流量扶持一站式服务。</p>
+                    
+                    <form onsubmit="event.preventDefault(); alert('申请已提交');" class="text-left space-y-3">
+                        <div>
+                            <label class="text-xs font-medium text-gray-700 ml-1">农户/合作社名称</label>
+                            <input type="text" required class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-700 ml-1">主营产品</label>
+                            <input type="text" required class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-700 ml-1">联系电话</label>
+                            <input type="tel" required class="w-full mt-1 bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-blue-200 transition-colors mt-2">提交申请</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Subview: Mall -->
+            <div id="sv-mall" class="sub-view hide">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                        <div class="h-24 bg-gray-100 relative">
+                            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=300&q=80" class="w-full h-full object-cover">
+                            <div class="absolute top-0 right-0 bg-purple-500 text-white text-[10px] px-2 py-0.5 rounded-bl">课程</div>
+                        </div>
+                        <div class="p-2">
+                            <div class="font-bold text-sm truncate">进阶修剪技术</div>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-orange-500 text-xs font-bold"><i class="fa-solid fa-coins mr-1"></i>500</span>
+                                <button class="text-[10px] border border-orange-500 text-orange-500 px-2 rounded-full">兑换</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                        <div class="h-24 bg-gray-100 relative">
+                            <img src="https://images.unsplash.com/photo-1576594422563-eb63744b3052?w=300&q=80" class="w-full h-full object-cover">
+                            <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-bl">实物</div>
+                        </div>
+                        <div class="p-2">
+                            <div class="font-bold text-sm truncate">云链定制鸭舌帽</div>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-orange-500 text-xs font-bold"><i class="fa-solid fa-coins mr-1"></i>1000</span>
+                                <button class="text-[10px] border border-orange-500 text-orange-500 px-2 rounded-full">兑换</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIEW: MINE -->
+    <section id="tab-mine" class="view-section fade-in hide p-3">
+        <!-- Profile Card -->
+        <div class="bg-white rounded-xl p-4 shadow-sm flex items-center mb-3">
+            <div class="w-14 h-14 bg-gray-200 rounded-full overflow-hidden mr-3">
+                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <div class="font-bold text-lg">王大伯</div>
+                <div class="text-xs text-gray-500 mt-0.5">已实名认证 | 普通用户</div>
+            </div>
+            <button class="text-xs text-gray-400 border border-gray-200 px-2 py-1 rounded-full">编辑</button>
+        </div>
+
+        <!-- Order Status -->
+        <div class="bg-white rounded-xl p-4 shadow-sm mb-3">
+            <div class="flex justify-between items-center mb-3">
+                <div class="font-bold text-sm">我的订单</div>
+                <div class="text-xs text-gray-400">全部 ></div>
+            </div>
+            <div class="flex justify-between text-center">
+                <div class="space-y-1">
+                    <i class="fa-regular fa-credit-card text-xl text-gray-600"></i>
+                    <div class="text-[10px] text-gray-500">待付款</div>
+                </div>
+                <div class="space-y-1">
+                    <i class="fa-solid fa-box-open text-xl text-gray-600"></i>
+                    <div class="text-[10px] text-gray-500">待发货</div>
+                </div>
+                <div class="space-y-1">
+                    <i class="fa-solid fa-truck text-xl text-gray-600"></i>
+                    <div class="text-[10px] text-gray-500">待收货</div>
+                </div>
+                <div class="space-y-1">
+                    <i class="fa-solid fa-headset text-xl text-gray-600"></i>
+                    <div class="text-[10px] text-gray-500">售后</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu List -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+            <div onclick="openModal('entry')" class="p-4 border-b border-gray-100 flex justify-between items-center active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-store text-green-500 w-5 text-center"></i>
+                    <span class="text-sm font-medium">农户入驻通道</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+            </div>
+            <div onclick="openModal('reservation')" class="p-4 border-b border-gray-100 flex justify-between items-center active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-calendar-check text-blue-500 w-5 text-center"></i>
+                    <span class="text-sm font-medium">直播场次预约</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+            </div>
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-location-dot text-orange-500 w-5 text-center"></i>
+                    <span class="text-sm font-medium">收货地址管理</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- OVERLAY: STREAMER LIVE ROOM -->
+<div id="overlay-streamer" class="fixed inset-0 bg-black z-50 hidden flex flex-col">
+    <!-- Header -->
+    <div class="absolute top-0 left-0 w-full p-4 z-10 flex justify-between items-center text-white bg-gradient-to-b from-black/50 to-transparent">
+        <button onclick="closeOverlay('streamer')" class="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center">
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="flex items-center gap-2 bg-black/20 backdrop-blur-md rounded-full px-1 pr-3 py-1">
+            <img src="https://randomuser.me/api/portraits/women/68.jpg" class="w-8 h-8 rounded-full border border-white">
+            <div class="text-xs">
+                <div class="font-bold">果园小李</div>
+                <div class="text-[10px] opacity-80">15.2w 粉丝</div>
+            </div>
+            <button class="bg-red-500 text-[10px] px-2 py-1 rounded-full ml-2">关注</button>
+        </div>
+        <button class="w-8 h-8"><i class="fa-solid fa-share"></i></button>
+    </div>
+
+    <!-- Video Area -->
+    <div class="flex-1 bg-gray-800 relative flex items-center justify-center">
+        <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover opacity-60">
+        <i class="fa-solid fa-circle-play text-6xl text-white/80 animate-pulse"></i>
+        
+        <!-- Comments Sim -->
+        <div class="absolute bottom-4 left-4 w-2/3 space-y-2 text-sm text-white text-shadow">
+            <div class="bg-black/30 self-start inline-block px-2 rounded-full"><span class="text-yellow-400 font-bold">张三:</span> 苹果看着真不错！</div>
+            <div class="bg-black/30 self-start inline-block px-2 rounded-full"><span class="text-yellow-400 font-bold">李四:</span> 已下单，支持助农</div>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet Content -->
+    <div class="bg-white rounded-t-2xl p-4 h-1/2 overflow-y-auto relative z-10 -mt-4">
+        <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+        
+        <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-fire text-red-500 mr-1"></i> 合作运营成功案例</h3>
+        <div class="space-y-3 mb-6">
+            <!-- Case 1 -->
+            <div class="bg-green-50 p-3 rounded-xl border border-green-100 flex items-center justify-between">
+                <div>
+                    <div class="text-xs text-green-600 font-bold mb-1">No.1 增长冠军</div>
+                    <div class="font-bold text-sm">江门激源橘业</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500">销售额增长</div>
+                    <div class="font-bold text-red-500 text-lg flex items-center gap-1">
+                        35% <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i> 86%
+                    </div>
+                </div>
+            </div>
+             <!-- Case 2 -->
+             <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 flex items-center justify-between">
+                <div>
+                    <div class="text-xs text-orange-600 font-bold mb-1">No.2</div>
+                    <div class="font-bold text-sm">赣南脐橙合作社</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500">销售额增长</div>
+                    <div class="font-bold text-red-500 text-lg flex items-center gap-1">
+                        20% <i class="fa-solid fa-arrow-right text-xs text-gray-400"></i> 65%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="font-bold text-lg mb-3">主播推荐课程</h3>
+        <div class="flex gap-3 overflow-x-auto no-scrollbar">
+            <div class="min-w-[140px] border border-gray-100 rounded-lg p-2">
+                <img src="https://images.unsplash.com/photo-1472289065668-ce650ac443d2?w=300&q=80" class="w-full h-20 object-cover rounded mb-2">
+                <div class="text-xs font-bold truncate">直播话术大全</div>
+                <div class="text-red-500 font-bold text-sm mt-1">¥8.88</div>
+            </div>
+            <div class="min-w-[140px] border border-gray-100 rounded-lg p-2">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&q=80" class="w-full h-20 object-cover rounded mb-2">
+                <div class="text-xs font-bold truncate">流量变现秘籍</div>
+                <div class="text-red-500 font-bold text-sm mt-1">¥9.90</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- OVERLAY: COURSE DETAIL -->
+<div id="overlay-course" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end backdrop-blur-sm">
+    <div class="bg-white w-full rounded-t-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+        <div class="relative h-56">
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80" class="w-full h-full object-cover">
+            <button onclick="closeOverlay('course')" class="absolute top-4 right-4 w-8 h-8 bg-black/30 text-white rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="p-5">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <div class="text-red-600 font-bold text-2xl price-tag">¥9.90 <span class="text-gray-400 text-sm line-through font-normal">¥299</span></div>
+                    <div class="text-xs text-orange-500 bg-orange-50 px-2 py-0.5 rounded mt-1 inline-block">购课送 10 积分</div>
+                </div>
+                <div class="text-xs text-gray-500 text-right">已售 1.2w+</div>
+            </div>
+            
+            <h2 class="font-bold text-xl mb-4 text-gray-900">短视频拍摄剪辑实战课 - 从入门到精通</h2>
+            
+            <div class="flex items-center gap-3 mb-6 bg-gray-50 p-3 rounded-xl">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-10 h-10 rounded-full">
+                <div>
+                    <div class="font-bold text-sm">讲师：李运营</div>
+                    <div class="text-xs text-gray-500">5年助农经验 | 累计培训学员 5000+</div>
+                </div>
+            </div>
+            
+            <h3 class="font-bold text-sm mb-2">课程简介</h3>
+            <p class="text-sm text-gray-500 leading-relaxed mb-6">
+                本课程专为农户打造，教你如何用一部手机拍出高质量农产品视频。包含脚本策划、运镜技巧、剪辑配乐、发布运营全流程。简单易学，包教包会！
+            </p>
+            
+            <button onclick="closeOverlay('course'); alert('购买成功！积分+10')" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-200 active:scale-95 transition-transform">立即购买</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: GENERIC (Form/Reservation) -->
+<div id="modal-overlay" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-xl w-full max-w-sm overflow-hidden animate-slide-up">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 id="modal-title" class="font-bold">标题</h3>
+            <button onclick="document.getElementById('modal-overlay').classList.add('hidden')" class="text-gray-400">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="modal-content" class="p-4 max-h-[70vh] overflow-y-auto"></div>
+    </div>
+</div>
+
+<!-- Templates -->
+<div id="tpl-entry" class="hidden">
+    <form onsubmit="event.preventDefault(); alert('提交成功'); document.getElementById('modal-overlay').classList.add('hidden');" class="space-y-3">
+        <div>
+            <label class="text-xs text-gray-500 ml-1">姓名</label>
+            <input type="text" required class="w-full border border-gray-200 rounded p-2 text-sm bg-gray-50">
+        </div>
+         <div>
+            <label class="text-xs text-gray-500 ml-1">电话</label>
+            <input type="tel" required class="w-full border border-gray-200 rounded p-2 text-sm bg-gray-50">
+        </div>
+         <div>
+            <label class="text-xs text-gray-500 ml-1">主营产品类型</label>
+            <select class="w-full border border-gray-200 rounded p-2 text-sm bg-gray-50">
+                <option>水果生鲜类</option>
+                <option>果脯类</option>
+                <option>副食品加工类</option>
+            </select>
+        </div>
+        <div>
+            <label class="text-xs text-gray-500 ml-1">用户信息补充</label>
+            <textarea rows="3" class="w-full border border-gray-200 rounded p-2 text-sm bg-gray-50" placeholder="种植规模、特色等..."></textarea>
+        </div>
+        <button class="w-full bg-green-600 text-white py-2 rounded-lg font-medium">提交申请</button>
+    </form>
+</div>
+
+<div id="tpl-reservation" class="hidden">
+    <div class="space-y-2">
+        <div class="bg-green-50 p-2 text-xs text-green-700 rounded mb-2">预约后将为您预留流量及直播档期</div>
+        <div class="flex justify-between items-center border p-2 rounded-lg">
+            <div class="text-sm">
+                <div class="font-bold">3月1日 (周六) 20:00</div>
+                <div class="text-xs text-gray-500">黄金档</div>
+            </div>
+            <button onclick="alert('预约成功')" class="bg-green-600 text-white text-xs px-3 py-1 rounded">预约</button>
+        </div>
+        <div class="flex justify-between items-center border p-2 rounded-lg">
+            <div class="text-sm">
+                <div class="font-bold">3月2日 (周日) 15:00</div>
+                <div class="text-xs text-gray-500">午后档</div>
+            </div>
+            <button onclick="alert('预约成功')" class="bg-green-600 text-white text-xs px-3 py-1 rounded">预约</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full bg-white border-t border-gray-100 z-40 max-w-md mx-auto left-0 right-0 pb-safe">
+    <div class="flex justify-around items-center h-14">
+        <button onclick="switchTab('home')" class="nav-item active flex flex-col items-center justify-center w-full h-full text-gray-400 text-[10px]">
+            <i class="fa-solid fa-house text-lg mb-1"></i>首页
+        </button>
+        <button onclick="switchTab('hot')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-400 text-[10px]">
+            <i class="fa-solid fa-fire text-lg mb-1"></i>热销课程
+        </button>
+        <button onclick="switchTab('community')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-400 text-[10px]">
+            <i class="fa-solid fa-users text-lg mb-1"></i>社区
+        </button>
+        <button onclick="switchTab('courses')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-400 text-[10px]">
+            <i class="fa-solid fa-graduation-cap text-lg mb-1"></i>课程/积分
+        </button>
+        <button onclick="switchTab('mine')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-400 text-[10px]">
+            <i class="fa-regular fa-user text-lg mb-1"></i>我的
+        </button>
+    </div>
+</nav>
+
+<script>
+    // Navigation
+    function switchTab(tabId) {
+        // Update Nav UI
+        const tabs = ['home', 'hot', 'community', 'courses', 'mine'];
+        const navBtns = document.querySelectorAll('.nav-item');
+        
+        navBtns.forEach((btn, idx) => {
+            if (tabs[idx] === tabId) {
+                btn.classList.add('active', 'text-green-600');
+                btn.classList.remove('text-gray-400');
+            } else {
+                btn.classList.remove('active', 'text-green-600');
+                btn.classList.add('text-gray-400');
+            }
+        });
+
+        // Switch View
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hide'));
+        document.getElementById(`tab-${tabId}`).classList.remove('hide');
+        window.scrollTo(0,0);
+    }
+
+    // Community Tabs
+    function switchCommTab(btn, type) {
+        document.querySelectorAll('.comm-tab').forEach(b => {
+            b.classList.remove('text-green-600', 'bg-green-50', 'font-bold');
+            b.classList.add('text-gray-500');
+        });
+        btn.classList.add('text-green-600', 'bg-green-50', 'font-bold');
+        btn.classList.remove('text-gray-500');
+
+        document.getElementById('feed-rec').classList.add('hide');
+        document.getElementById('feed-qa').classList.add('hide');
+        document.getElementById('feed-live').classList.add('hide');
+        document.getElementById(`feed-${type}`).classList.remove('hide');
+    }
+
+    // Courses Sub Tabs
+    function switchSubTab(type) {
+        // Buttons
+        document.querySelectorAll('.sub-tab').forEach(b => {
+            b.classList.remove('text-green-600', 'border-green-600', 'font-bold');
+            b.classList.add('text-gray-500', 'border-transparent');
+        });
+        document.getElementById(`st-${type}`).classList.add('text-green-600', 'border-green-600', 'font-bold');
+        
+        // Views
+        document.querySelectorAll('.sub-view').forEach(v => v.classList.add('hide'));
+        document.getElementById(`sv-${type}`).classList.remove('hide');
+    }
+
+    // Modals & Overlays
+    function openModal(type) {
+        const overlay = document.getElementById('modal-overlay');
+        const title = document.getElementById('modal-title');
+        const content = document.getElementById('modal-content');
+        
+        if (type === 'entry') {
+            title.innerText = "农户入驻通道";
+            content.innerHTML = document.getElementById('tpl-entry').innerHTML;
+        } else if (type === 'reservation') {
+            title.innerText = "直播场次预约";
+            content.innerHTML = document.getElementById('tpl-reservation').innerHTML;
+        }
+        
+        overlay.classList.remove('hidden');
+    }
+
+    function openStreamer(id) {
+        document.getElementById('overlay-streamer').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openCourseDetail(id) {
+        document.getElementById('overlay-course').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeOverlay(type) {
+        document.getElementById(`overlay-${type}`).classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+</script>
